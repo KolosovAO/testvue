@@ -1,19 +1,42 @@
 <template>
-	<div>
-	<input type="text" @input="filter"></input>
+	<div class="dota">
+		<input type="text" @input="filter" placeholder="type to filter"/>
 		<div class="heroes-list">
-			<img 
-				:src="hero.icon"
-				@contextmenu="heroClick($event, hero)"
-				@click="heroClick($event, hero)"
-				:class="{ally_selected: hero.$markedAlly, enemy_selected: hero.$markedEnemy, filtered: !hero.$filtered}"
-				v-for="hero in heroes">
-			</img>
+			<div class="heroes str-heroes">
+				<img
+					:src="hero.icon"
+					:key="hero.id"
+					@contextmenu="heroClick($event, hero)"
+					@click="heroClick($event, hero)"
+					:class="{ally_selected: hero.$markedAlly, enemy_selected: hero.$markedEnemy, filtered: !hero.$filtered}"
+					v-for="hero in strHeroes"
+				/>
+			</div>
+			<div class="heroes agi-heroes">
+				<img
+					:src="hero.icon"
+					:key="hero.id"
+					@contextmenu="heroClick($event, hero)"
+					@click="heroClick($event, hero)"
+					:class="{ally_selected: hero.$markedAlly, enemy_selected: hero.$markedEnemy, filtered: !hero.$filtered}"
+					v-for="hero in agiHeroes"
+				/>
+			</div>
+			<div class="heroes int-heroes">
+				<img
+					:src="hero.icon"
+					:key="hero.id"
+					@contextmenu="heroClick($event, hero)"
+					@click="heroClick($event, hero)"
+					:class="{ally_selected: hero.$markedAlly, enemy_selected: hero.$markedEnemy, filtered: !hero.$filtered}"
+					v-for="hero in intHeroes"
+				/>
+			</div>
 		</div>
 		<div class="picks">
 			<div>Team 1 pick:</div>
 			<div class="pick">
-				<img v-for="id in ally" :src="heroes[id].icon"></img>
+				<img v-for="id in ally" :src="heroes[id].icon" :key="id"/>
 			</div>
 			<button @click="findBest(false)">Find best vs team1</button>
 			<pre>{{bestVsTeam1}}</pre>
@@ -21,14 +44,14 @@
 		<div>
 			<div>Team 2 pick:</div>
 			<div class="pick">
-				<img v-for="id in enemy" :src="heroes[id].icon"></img>
+				<img v-for="id in enemy" :src="heroes[id].icon" :key="id"/>
 			</div>
 			<button @click="findBest(true)">Find best vs team2</button>
 			<pre>{{bestVsTeam2}}</pre>
 		</div>
 		<div>
-			<button @click="findWinrate">get winrate</button>
-			<pre>{{winrate}}</pre>
+			<button @click="findWinrate">Get winrate</button>
+			<pre v-if="winrate">{{winrate}}</pre>
 		</div>
 	</div>
 </template>
@@ -45,16 +68,23 @@ export default {
 			filterValue: "",
 			bestVsTeam1: "",
 			bestVsTeam2: "",
-			winrate: ""
+			winrate: "",
+			agiHeroes: [],
+			strHeroes: [],
+			intHeroes: []
 		}
 	},
 	beforeMount() {
 		const url = "https://api.opendota.com/api/heroStats";
 		fetch(url).then(res => res.json()).then(data => {
+			const str = [];
+			const agi = [];
+			const int = [];
 			const heroes = {};
 			for (const hero of data) {
 				heroes[hero.id] = {
 					id: hero.id,
+					attr: hero.primary_attr,
 					icon: "http://cdn.dota2.com" + hero.icon,
 					img: "http://cdn.dota2.com" + hero.img,
 					name: hero.name,
@@ -63,7 +93,25 @@ export default {
 					$markedEnemy: false,
 					$filtered: true
 				};
+				switch(hero.primary_attr) {
+					case "agi":
+						agi.push(heroes[hero.id]);
+						break;
+					case "str":
+						str.push(heroes[hero.id]);
+						break;
+					case "int":
+						int.push(heroes[hero.id]);
+						break;
+				}
 			}
+			const sortRule = (a, b) => a.local.localeCompare(b.local);
+			str.sort(sortRule);
+			int.sort(sortRule);
+			agi.sort(sortRule);
+			this.agiHeroes = agi;
+			this.strHeroes = str;
+			this.intHeroes = int;
 			this.heroes = heroes;
 		});
 	},
@@ -152,7 +200,7 @@ export default {
 				}, 0) / 5;
 				count += avHeroWr;
 			});
-			return `winrate - ${count / 5} ${badCount > 5 ? "*" : ""}`;
+			return `winrate - ${count * 20} ${badCount > 5 ? "*" : ""}`;
 		},
 		async findBestHero(pick) {
 			const matchups = this.getMatchups(pick);
@@ -191,7 +239,13 @@ export default {
 </script>
 
 <style scoped>
+	.dota {
+		font-family: Roboto;
+		font-size: 14px;
+		background: #FEFEFE;
+	}
 	input {
+		font-size: 22px;
 		outline: none;
 		border: none;
         border-bottom: 1px solid black;
@@ -199,8 +253,17 @@ export default {
 	}
 	.heroes-list {
 		display: flex;
+		flex-direction: column;
+		background: gray;
+	}
+	.heroes-list img {
+		cursor: pointer;
+	}
+	.heroes {
+		display: flex;
+		width: 1100px;
 		flex-wrap: wrap;
-		flex-direction: row;
+		margin: 12px 0 12px 0;
 	}
 	.ally_selected {
 		background: rgba(0, 255, 0, 0.5);
@@ -214,9 +277,23 @@ export default {
 	img {
 		width: 40px;
 		height: 40px;
+		padding: 4px;
+	}
+	button {
+		background-color: rgba(0, 0, 0, 0.8);
+		border: none;
+		color: white;
+		padding: 15px 32px;
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+		font-size: 16px;
+		margin: 4px 2px;
+		cursor: pointer;
 	}
 	.pick {
-		width: 220px;
-		height: 40px;
+		width: 240px;
+		height: 48px;
+		border: 1px solid #cecece;
 	}
 </style>
