@@ -33,25 +33,25 @@
 				/>
 			</div>
 		</div>
-		<div class="picks">
-			<div>Team 1 pick:</div>
-			<div class="pick">
-				<img v-for="id in ally" :src="heroes[id].icon" :key="id"/>
+		<div class="calculations">
+			<div class="calc-block picks">
+				<div class="pick">
+					<img v-for="id in ally" :src="heroes[id].icon" :key="id"/>
+				</div>
+				<button @click="findBest(false)">Find best vs team1</button>
+				<pre>{{bestVsTeam1}}</pre>
 			</div>
-			<button @click="findBest(false)">Find best vs team1</button>
-			<pre>{{bestVsTeam1}}</pre>
-		</div>
-		<div>
-			<div>Team 2 pick:</div>
-			<div class="pick">
-				<img v-for="id in enemy" :src="heroes[id].icon" :key="id"/>
+			<div class="calc-block picks">
+				<div class="pick">
+					<img v-for="id in enemy" :src="heroes[id].icon" :key="id"/>
+				</div>
+				<button @click="findBest(true)">Find best vs team2</button>
+				<pre>{{bestVsTeam2}}</pre>
 			</div>
-			<button @click="findBest(true)">Find best vs team2</button>
-			<pre>{{bestVsTeam2}}</pre>
-		</div>
-		<div>
-			<button @click="findWinrate">Get winrate</button>
-			<pre v-if="winrate">{{winrate}}</pre>
+			<div class="calc-block winrate">
+				<button @click="findWinrate">Get winrate</button>
+				<pre v-if="winrate">{{winrate}}</pre>
+			</div>
 		</div>
 	</div>
 </template>
@@ -274,6 +274,11 @@ export default {
 	.filtered {
 		opacity: 0.2;
 	}
+	.calculations .calc-block {
+		margin: 0 12px 0 12px;
+		width: 248px;
+		height: 180px;
+	}
 	img {
 		width: 40px;
 		height: 40px;
@@ -283,17 +288,24 @@ export default {
 		background-color: rgba(0, 0, 0, 0.8);
 		border: none;
 		color: white;
-		padding: 15px 32px;
 		text-align: center;
 		text-decoration: none;
 		display: inline-block;
 		font-size: 16px;
-		margin: 4px 2px;
+		height: 50px;
 		cursor: pointer;
+		width: 100%;
 	}
 	.pick {
-		width: 240px;
 		height: 48px;
 		border: 1px solid #cecece;
+	}
+	.calculations {
+		margin: 12px 0 0 0;
+		display: flex;
+		flex-direction: row;
+	}
+	.winrate button {
+		margin: 51px 0 0 0;
 	}
 </style>
