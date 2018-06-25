@@ -39,14 +39,24 @@
 					<img v-for="id in ally" :src="heroes[id].icon" :key="id"/>
 				</div>
 				<button @click="findBest(false)">Find best vs team1</button>
-				<pre>{{bestVsTeam1}}</pre>
+				<div v-if="bestVsTeam1">
+					<div class="best-hero" v-for="hero in bestVsTeam1" :key="hero.id">
+						<img :src="heroes[hero.id].icon"/>
+						<div>{{hero.winrate}} {{hero.bad ? "*" : ""}}</div>
+					</div>
+				</div>
 			</div>
 			<div class="calc-block picks">
 				<div class="pick">
 					<img v-for="id in enemy" :src="heroes[id].icon" :key="id"/>
 				</div>
 				<button @click="findBest(true)">Find best vs team2</button>
-				<pre>{{bestVsTeam2}}</pre>
+				<div v-if="bestVsTeam2">
+					<div class="best-hero" v-for="hero in bestVsTeam2" :key="hero.id">
+						<img :src="heroes[hero.id].icon"/>
+						<div>{{hero.winrate}} {{hero.bad ? "*" : ""}}</div>
+					</div>
+				</div>
 			</div>
 			<div class="calc-block winrate">
 				<button @click="findWinrate">Get winrate</button>
@@ -117,8 +127,8 @@ export default {
 	},
 	methods: {
 		heroClick(e, hero) {
-			this.bestVsTeam1 = "";
-			this.bestVsTeam2 = "";
+			this.bestVsTeam1 = [];
+			this.bestVsTeam2 = [];
 			this.winrate = "";
 			if (e.which === 3) {
 				e.preventDefault();
@@ -223,13 +233,13 @@ export default {
 					}
 				});
 				result.push({
-					name: this.heroes[heroId].local,
-					winrate: total / pick.length,
+					id: heroId,
+					winrate: (total / pick.length * 100).toFixed(4),
 					bad
 				})
 			}));
 			result.sort((a, b) => b.winrate - a.winrate);
-			return result.slice(0, 15).map(item => `${item.name} - ${item.winrate} ${item.bad ? "*" : ""}`).join("\n");
+			return result.slice(0, 15);
 		},
 		getMatchups(pick) {
 			return pick.map(id => fetch(`https://api.opendota.com/api/heroes/${id}/matchups`).then(res => res.json()));
@@ -307,5 +317,18 @@ export default {
 	}
 	.winrate button {
 		margin: 51px 0 0 0;
+	}
+	.best-hero {
+		height: 28px;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+	}
+	.best-hero img {
+		width: 24px;
+		height: 24px;
+	}
+	.best-hero div {
+		line-height: 28px;
 	}
 </style>
