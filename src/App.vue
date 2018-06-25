@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import Dota from './components/dota'
+import Dota from './components/Dota'
 
 export default {
 	name: 'App',
