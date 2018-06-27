@@ -1,6 +1,6 @@
 <template>
 	<div class="dota">
-		<input type="text" @input="filter" placeholder="type to filter"/>
+		<div class="find-helper">{{heroFilter}}</div>
 		<div class="heroes-list">
 			<div class="heroes str-heroes">
 				<img
@@ -75,16 +75,33 @@ export default {
 			heroes: [],
 			enemy: [],
 			ally: [],
-			filterValue: "",
 			bestVsTeam1: "",
 			bestVsTeam2: "",
 			winrate: "",
 			agiHeroes: [],
 			strHeroes: [],
-			intHeroes: []
+			intHeroes: [],
+			heroFilter: ""
 		}
 	},
 	beforeMount() {
+		document.addEventListener("keydown", e => {
+			if (e.shiftKey || e.altKey || e.ctrlKey) {
+				return;
+			}
+			if (e.keyCode >= 65 && e.keyCode <= 90) {
+				this.heroFilter += e.key;
+			}
+			if (e.keyCode === 8 && this.heroFilter.length) {
+				this.heroFilter = this.heroFilter.slice(0, -1);
+			}
+			if (e.keyCode === 27) {
+				this.heroFilter = "";
+			}
+			for (const key in this.heroes) {
+				this.heroes[key].$filtered = this.heroes[key].local.toLowerCase().indexOf(this.heroFilter) !== -1;
+			}
+		})
 		const url = "https://api.opendota.com/api/heroStats";
 		fetch(url).then(res => res.json()).then(data => {
 			const str = [];
@@ -178,13 +195,6 @@ export default {
 			hero[other] = false;
 
 			arr.push(hero.id);
-		},
-		filter(e) {
-			const value = e.target.value;
-			this.filterValue = value;
-			for (const key in this.heroes) {
-				this.heroes[key].$filtered = this.heroes[key].local.toLowerCase().indexOf(value) !== -1;
-			}
 		},
 		async getWinrate() {
 			const team1 = this.ally;
@@ -330,5 +340,13 @@ export default {
 	}
 	.best-hero div {
 		line-height: 28px;
+	}
+	.find-helper {
+		width: 500px;
+		height: 40px;
+		border: 1px solid #cecece;
+		font-size: 24px;
+		line-height: 40px;
+		padding: 0 8px 0 8px;
 	}
 </style>
