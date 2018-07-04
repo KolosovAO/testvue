@@ -38,9 +38,12 @@
 				<div class="pick">
 					<img v-for="id in ally" :src="heroes[id].icon" :key="id"/>
 				</div>
-				<button @click="findBest(false)">Find best vs team1</button>
-				<div v-if="bestVsTeam1">
-					<div class="best-hero" v-for="hero in bestVsTeam1" :key="hero.id">
+				<div class="find-controller">
+					<button class="toggler" @click="toggle(false)">{{showBest1 ? "best" : "worst"}}</button>
+					<button @click="findBest(false)">find vs team1</button>
+				</div>
+				<div v-if="bestVsTeam1.length">
+					<div class="best-hero" v-for="hero in team1Heroes" :key="hero.id">
 						<img :src="heroes[hero.id].icon"/>
 						<div>{{hero.winrate}} {{hero.bad ? "*" : ""}}</div>
 					</div>
@@ -50,16 +53,19 @@
 				<div class="pick">
 					<img v-for="id in enemy" :src="heroes[id].icon" :key="id"/>
 				</div>
-				<button @click="findBest(true)">Find best vs team2</button>
-				<div v-if="bestVsTeam2">
-					<div class="best-hero" v-for="hero in bestVsTeam2" :key="hero.id">
+				<div class="find-controller">
+					<button class="toggler" @click="toggle(true)">{{showBest2 ? "best" : "worst"}}</button>
+					<button @click="findBest(true)">find vs team2</button>
+				</div>
+				<div v-if="bestVsTeam2.length">
+					<div class="best-hero" v-for="hero in team2Heroes" :key="hero.id">
 						<img :src="heroes[hero.id].icon"/>
 						<div>{{hero.winrate}} {{hero.bad ? "*" : ""}}</div>
 					</div>
 				</div>
 			</div>
 			<div class="calc-block winrate">
-				<button @click="findWinrate">Get winrate</button>
+				<button @click="findWinrate">get winrate</button>
 				<pre v-if="winrate">{{winrate}}</pre>
 			</div>
 		</div>
@@ -75,8 +81,12 @@ export default {
 			heroes: [],
 			enemy: [],
 			ally: [],
-			bestVsTeam1: "",
-			bestVsTeam2: "",
+			bestVsTeam1: [],
+			showBest1: true,
+			showBest2: true,
+			bestVsTeam2: [],
+			worstVsTeam1: [],
+			worstVsTeam2: [],
 			winrate: "",
 			agiHeroes: [],
 			strHeroes: [],
@@ -146,6 +156,8 @@ export default {
 		heroClick(e, hero) {
 			this.bestVsTeam1 = [];
 			this.bestVsTeam2 = [];
+			this.worstVsTeam1 = [];
+			this.worstVsTeam2 = [];
 			this.winrate = "";
 			if (e.which === 3) {
 				e.preventDefault();
@@ -158,12 +170,14 @@ export default {
 			if (enemy) {
 				const pick = this.enemy;
 				this.findBestHero(pick).then(data => {
-					this.bestVsTeam2 = data;
+					this.bestVsTeam2 = data.best;
+					this.worstVsTeam2 = data.worst;
 				});
 			} else {
 				const pick = this.ally;
 				this.findBestHero(pick).then(data => {
-					this.bestVsTeam1 = data;
+					this.bestVsTeam1 = data.best;
+					this.worstVsTeam1 = data.worst;
 				});
 			}
 		},
@@ -171,6 +185,13 @@ export default {
 			this.getWinrate().then(data => {
 				this.winrate = data;
 			})
+		},
+		toggle(isTeam2) {
+			if (isTeam2) {
+				this.showBest2 = !this.showBest2;
+			} else {
+				this.showBest1 = !this.showBest1;
+			}
 		},
 		balanceArray(hero, isEnemy) {
 			const enemyIndex = this.enemy.indexOf(hero.id);
@@ -249,10 +270,21 @@ export default {
 				})
 			}));
 			result.sort((a, b) => b.winrate - a.winrate);
-			return result.slice(0, 15);
+			return {
+				best: result.slice(0, 15),
+				worst: result.slice(-15).reverse()
+			}
 		},
 		getMatchups(pick) {
 			return pick.map(id => fetch(`https://api.opendota.com/api/heroes/${id}/matchups`).then(res => res.json()));
+		}
+	},
+	computed: {
+		team1Heroes() {
+			return this.showBest1 ? this.bestVsTeam1 : this.worstVsTeam1;
+		},
+		team2Heroes() {
+			return this.showBest2 ? this.bestVsTeam2 : this.worstVsTeam2;
 		}
 	}
 }
@@ -316,6 +348,16 @@ export default {
 		cursor: pointer;
 		width: 100%;
 	}
+	.find-controller {
+		display: flex;
+		flex-direction: row;
+	}
+	.find-controller button {
+		width: 50%;
+	}
+	.toggler {
+		background: rgba(0, 0, 0, 0.5);
+	}
 	.pick {
 		height: 48px;
 		border: 1px solid #cecece;
@@ -342,6 +384,8 @@ export default {
 		line-height: 28px;
 	}
 	.find-helper {
+		display: flex;
+		justify-content: center;
 		width: 500px;
 		height: 40px;
 		border: 1px solid #cecece;
