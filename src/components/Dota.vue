@@ -272,7 +272,7 @@ export default {
 			result.sort((a, b) => b.winrate - a.winrate);
 			return {
 				best: result.slice(0, 15),
-				worst: result.slice(-15).reverse()
+				worst: result.slice(-15)
 			}
 		},
 		getMatchups(pick) {
