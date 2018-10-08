@@ -73,6 +73,7 @@
 </template>
 
 <script>
+import { getWinrate } from "./../helper";
 
 export default {
 	name: 'Dota',
@@ -225,23 +226,10 @@ export default {
 			}
 			const matchups = this.getMatchups(team1);
 			const heroes = await Promise.all(matchups);
-			let count = 0;
-			let badCount = 0;
-			heroes.forEach(hero => {
-				const avHeroWr = hero.reduce((total, item) => {
-					if (team2.find(id => id == item.hero_id)) {
-						if (!item || item.games_played < 8) {
-							total += 0.5;
-							badCount ++;
-						} else {
-							total += item.wins / item.games_played;
-						}
-					}
-					return total;
-				}, 0) / 5;
-				count += avHeroWr;
-			});
-			return `winrate - ${count * 20} ${badCount > 5 ? "*" : ""}`;
+
+			const vsTeam2Heroes = heroes.map(arr => arr.filter(hero => team2.includes(hero.hero_id)));
+
+			return getWinrate(vsTeam2Heroes);
 		},
 		async findBestHero(pick) {
 			const matchups = this.getMatchups(pick);
