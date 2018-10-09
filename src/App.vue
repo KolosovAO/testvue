@@ -4,7 +4,7 @@
     		<img class="logo" src="./assets/bear.jpg">
 			<div class="header-text">MEDVEBOT</div>
 		</div>
-		<picker 
+		<picker
 			:heroes="heroes"
 			:agiHeroes="agiHeroes"
 			:strHeroes="strHeroes"

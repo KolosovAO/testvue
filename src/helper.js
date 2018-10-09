@@ -15,7 +15,7 @@ export function getWinrate(matchups) {
         count += avHeroWr;
     });
 
-    return `winrate - ${count * 20} ${badCount > 5 ? "*" : ""}`;
+    return `${count * 20} ${badCount > 5 ? "*" : ""}`;
 }
 
 export function findBestHero(heroes, pick, heroesIds) {

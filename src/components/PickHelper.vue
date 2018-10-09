@@ -67,8 +67,8 @@
 				</div>
 			</div>
 			<div class="calc-block winrate">
+				<div class="team-winrate" :class="{positive: winrate > 50, empty: !winrate}">{{winrate || ""}}</div>
 				<button @click="findWinrate">get winrate</button>
-				<pre v-if="winrate">{{winrate}}</pre>
 			</div>
 		</div>
 	</div>
@@ -145,12 +145,18 @@ export default {
 		findBest(enemy) {
 			if (enemy) {
 				const pick = this.enemy;
+				if (!pick.length) {
+					return;
+				}
 				this.findBestHero(pick).then(data => {
 					this.bestVsTeam2 = data.best;
 					this.worstVsTeam2 = data.worst;
 				});
 			} else {
 				const pick = this.ally;
+				if (!pick.length) {
+					return;
+				}
 				this.findBestHero(pick).then(data => {
 					this.bestVsTeam1 = data.best;
 					this.worstVsTeam1 = data.worst;
@@ -310,9 +316,6 @@ export default {
 		flex-direction: row;
 		background: #E0E0E0;
 	}
-	.winrate button {
-		margin: 51px 0 0 0;
-	}
 	.best-hero {
 		height: 28px;
 		display: flex;
@@ -325,5 +328,21 @@ export default {
 	}
 	.best-hero div {
 		line-height: 28px;
+	}
+	.team-winrate {
+		color: rgba(0, 0, 0, 0.7);
+		font-family: Roboto;
+		font-size: 20px;
+		height: 48px;
+		line-height: 50px;
+		text-align: center;
+		background: rgba(255, 0, 0, 0.4);
+		border: 1px solid #cecece;
+	}
+	.team-winrate.positive {
+		background: rgba(0, 255, 0, 0.4);
+	}
+	.team-winrate.empty {
+		background: transparent;
 	}
 </style>
