@@ -1,36 +1,38 @@
 <template>
 	<div class="dota">
-		<div class="find-helper">{{heroFilter}}</div>
-		<div class="heroes-list">
-			<div class="heroes str-heroes">
-				<img
-					:src="hero.icon"
-					:key="hero.id"
-					@contextmenu="heroClick($event, hero)"
-					@click="heroClick($event, hero)"
-					:class="{ally_selected: hero.$markedAlly, enemy_selected: hero.$markedEnemy, filtered: !hero.$filtered}"
-					v-for="hero in strHeroes"
-				/>
-			</div>
-			<div class="heroes agi-heroes">
-				<img
-					:src="hero.icon"
-					:key="hero.id"
-					@contextmenu="heroClick($event, hero)"
-					@click="heroClick($event, hero)"
-					:class="{ally_selected: hero.$markedAlly, enemy_selected: hero.$markedEnemy, filtered: !hero.$filtered}"
-					v-for="hero in agiHeroes"
-				/>
-			</div>
-			<div class="heroes int-heroes">
-				<img
-					:src="hero.icon"
-					:key="hero.id"
-					@contextmenu="heroClick($event, hero)"
-					@click="heroClick($event, hero)"
-					:class="{ally_selected: hero.$markedAlly, enemy_selected: hero.$markedEnemy, filtered: !hero.$filtered}"
-					v-for="hero in intHeroes"
-				/>
+		<div class="heroes-list-wrapper">
+			<finder :filter="heroFilter"></finder>
+			<div class="heroes-list">
+				<div class="heroes str-heroes">
+					<img
+						:src="hero.icon"
+						:key="hero.id"
+						@contextmenu="heroClick($event, hero)"
+						@click="heroClick($event, hero)"
+						:class="{ally_selected: hero.$markedAlly, enemy_selected: hero.$markedEnemy, filtered: !hero.$filtered}"
+						v-for="hero in strHeroes"
+					/>
+				</div>
+				<div class="heroes agi-heroes">
+					<img
+						:src="hero.icon"
+						:key="hero.id"
+						@contextmenu="heroClick($event, hero)"
+						@click="heroClick($event, hero)"
+						:class="{ally_selected: hero.$markedAlly, enemy_selected: hero.$markedEnemy, filtered: !hero.$filtered}"
+						v-for="hero in agiHeroes"
+					/>
+				</div>
+				<div class="heroes int-heroes">
+					<img
+						:src="hero.icon"
+						:key="hero.id"
+						@contextmenu="heroClick($event, hero)"
+						@click="heroClick($event, hero)"
+						:class="{ally_selected: hero.$markedAlly, enemy_selected: hero.$markedEnemy, filtered: !hero.$filtered}"
+						v-for="hero in intHeroes"
+					/>
+				</div>
 			</div>
 		</div>
 		<div class="calculations">
@@ -74,9 +76,13 @@
 
 <script>
 import { getWinrate } from "./../helper";
+import Finder from "./Finder";
 
 export default {
 	name: 'Dota',
+	components: {
+		finder: Finder
+	},
 	data () {
 		return {
 			heroes: [],
@@ -282,7 +288,8 @@ export default {
 	.dota {
 		font-family: Roboto;
 		font-size: 14px;
-		background: #FEFEFE;
+		background: #E0E0E0;
+		height: calc(100% - 60px);
 	}
 	input {
 		font-size: 22px;
@@ -291,10 +298,13 @@ export default {
         border-bottom: 1px solid black;
 		margin: 0 0 12px 0;
 	}
+	.heroes-list-wrapper {
+		position: relative;
+	}
 	.heroes-list {
 		display: flex;
 		flex-direction: column;
-		background: gray;
+		background: #757575;
 	}
 	.heroes-list img {
 		cursor: pointer;
@@ -315,7 +325,7 @@ export default {
 		opacity: 0.2;
 	}
 	.calculations .calc-block {
-		margin: 0 12px 0 12px;
+		margin: 0 36px 0 0;
 		width: 248px;
 		height: 180px;
 	}
@@ -354,6 +364,7 @@ export default {
 		margin: 12px 0 0 0;
 		display: flex;
 		flex-direction: row;
+		background: #E0E0E0;
 	}
 	.winrate button {
 		margin: 51px 0 0 0;
@@ -370,15 +381,5 @@ export default {
 	}
 	.best-hero div {
 		line-height: 28px;
-	}
-	.find-helper {
-		display: flex;
-		justify-content: center;
-		width: 500px;
-		height: 40px;
-		border: 1px solid #cecece;
-		font-size: 24px;
-		line-height: 40px;
-		padding: 0 8px 0 8px;
 	}
 </style>
