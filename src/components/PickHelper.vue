@@ -1,5 +1,5 @@
 <template>
-	<div class="dota">
+	<div class="pick-helper">
 		<div class="heroes-list-wrapper">
 			<finder :filter="heroFilter"></finder>
 			<div class="heroes-list">
@@ -75,17 +75,22 @@
 </template>
 
 <script>
-import { getWinrate } from "./../helper";
+import { getWinrate, findBestHero } from "./../helper";
 import Finder from "./Finder";
 
 export default {
-	name: 'Dota',
+	name: 'Pickhelper',
 	components: {
 		finder: Finder
 	},
+	props: {
+		heroes: Object,
+		agiHeroes: Array,
+		strHeroes: Array,
+		intHeroes: Array
+	},
 	data () {
 		return {
-			heroes: [],
 			enemy: [],
 			ally: [],
 			bestVsTeam1: [],
@@ -95,14 +100,12 @@ export default {
 			worstVsTeam1: [],
 			worstVsTeam2: [],
 			winrate: "",
-			agiHeroes: [],
-			strHeroes: [],
-			intHeroes: [],
-			heroFilter: ""
+			heroFilter: "",
+			keydownListener: null
 		}
 	},
 	beforeMount() {
-		document.addEventListener("keydown", e => {
+		this.keydownListener = e => {
 			if (e.shiftKey || e.altKey || e.ctrlKey) {
 				return;
 			}
@@ -118,46 +121,12 @@ export default {
 			for (const key in this.heroes) {
 				this.heroes[key].$filtered = this.heroes[key].local.toLowerCase().indexOf(this.heroFilter) !== -1;
 			}
-		})
-		const url = "https://api.opendota.com/api/heroStats";
-		fetch(url).then(res => res.json()).then(data => {
-			const str = [];
-			const agi = [];
-			const int = [];
-			const heroes = {};
-			for (const hero of data) {
-				heroes[hero.id] = {
-					id: hero.id,
-					attr: hero.primary_attr,
-					icon: "http://cdn.dota2.com" + hero.icon,
-					img: "http://cdn.dota2.com" + hero.img,
-					name: hero.name,
-					local: hero.localized_name,
-					$markedAlly: false,
-					$markedEnemy: false,
-					$filtered: true
-				};
-				switch(hero.primary_attr) {
-					case "agi":
-						agi.push(heroes[hero.id]);
-						break;
-					case "str":
-						str.push(heroes[hero.id]);
-						break;
-					case "int":
-						int.push(heroes[hero.id]);
-						break;
-				}
-			}
-			const sortRule = (a, b) => a.local.localeCompare(b.local);
-			str.sort(sortRule);
-			int.sort(sortRule);
-			agi.sort(sortRule);
-			this.agiHeroes = agi;
-			this.strHeroes = str;
-			this.intHeroes = int;
-			this.heroes = heroes;
-		});
+		};
+		document.addEventListener("keydown", this.keydownListener);
+
+	},
+	beforeDestroy() {
+		document.removeEventListener("keydown", this.keydownListener);
 	},
 	methods: {
 		heroClick(e, hero) {
@@ -241,33 +210,8 @@ export default {
 			const matchups = this.getMatchups(pick);
 			const heroes = await Promise.all(matchups);
 			const allHeroes = Object.keys(this.heroes);
-			const result = [];
-			allHeroes.forEach((heroId => {
-				if (pick.find(hero => heroId == hero)) {
-					return;
-				}
-				let total = 0;
-				let bad = false;
-				heroes.forEach(hero => {
-					const currentHero = hero.find(item => item.hero_id == heroId);
-					if (!currentHero || currentHero.games_played < 10) {
-						total += 0.5;
-						bad = true;
-					} else {
-						total += 1 - currentHero.wins / currentHero.games_played;
-					}
-				});
-				result.push({
-					id: heroId,
-					winrate: (total / pick.length * 100).toFixed(4),
-					bad
-				})
-			}));
-			result.sort((a, b) => b.winrate - a.winrate);
-			return {
-				best: result.slice(0, 15),
-				worst: result.slice(-15)
-			}
+
+			return findBestHero(heroes, pick, allHeroes);
 		},
 		getMatchups(pick) {
 			return pick.map(id => fetch(`https://api.opendota.com/api/heroes/${id}/matchups`).then(res => res.json()));
@@ -285,7 +229,7 @@ export default {
 </script>
 
 <style scoped>
-	.dota {
+	.pick-helper {
 		font-family: Roboto;
 		font-size: 14px;
 		background: #E0E0E0;
