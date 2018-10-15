@@ -155,7 +155,7 @@
 		text-decoration: none;
 		display: inline-block;
 		font-size: 16px;
-		height: 120px;
+		height: 80px;
 		cursor: pointer;
 		width: 100%;
 	}

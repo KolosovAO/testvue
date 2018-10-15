@@ -181,6 +181,7 @@
         text-align: center;
         font-family: Roboto;
         font-size: 16px;
+        border-spacing: 1px;
     }
     .player-games-info button {
         font-family: Roboto;
@@ -200,5 +201,9 @@
     }
     .match.win {
         background: rgba(0, 255, 0, 0.2); 
+    }
+    .match img {
+        display: block;
+        margin: auto;
     }
 </style>
