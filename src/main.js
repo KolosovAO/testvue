@@ -7,6 +7,8 @@ Vue.config.productionTip = false
 Vue.config.debug = false
 Vue.config.silent = true
 
+console.warn = function() {} // hack to disable notications
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
