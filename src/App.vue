@@ -4,26 +4,41 @@
     		<img class="logo" src="./assets/bear.jpg">
 			<div class="header-text">MEDVEBOT</div>
 		</div>
-		<picker 
-			:heroes="heroes"
-			:agiHeroes="agiHeroes"
-			:strHeroes="strHeroes"
-			:intHeroes="intHeroes"
-		></picker>
+		<div class="app-body">
+			<sidebar :active="active"/>
+			<div class="app-content">
+				<picker
+					v-if="active===0"
+					:heroes="heroes"
+					:agiHeroes="agiHeroes"
+					:strHeroes="strHeroes"
+					:intHeroes="intHeroes"
+				></picker>
+				<playerInfo 
+					v-if="active===1"
+					:heroes="heroes"
+				></playerInfo>
+			</div>
+		</div>
 	</div>
 </template>
 
 <script>
 import PickHelper from './components/PickHelper'
+import PlayerInfo from './components/PlayerInfo'
+import Sidebar from './components/Sidebar'
 
 export default {
 	name: 'App',
 	components: {
-		picker: PickHelper
+		picker: PickHelper,
+		sidebar: Sidebar,
+		playerInfo: PlayerInfo
 	},
 	data () {
 		return {
 			heroes: {},
+			active: 0,
 			agiHeroes: [],
 			strHeroes: [],
 			intHeroes: []
@@ -68,6 +83,10 @@ export default {
 			this.strHeroes = str;
 			this.intHeroes = int;
 			this.heroes = heroes;
+
+			this.$root.$on("updateAcitveItem", index => {
+				this.active = index;
+			});
 		});
 	}
 }
@@ -94,6 +113,16 @@ export default {
 		font-family: Roboto;
 		color: #FFF;
 		font-size: 40px;
+	}
+	.app-body {
+		display: flex;
+		flex-direction: row;
+		height: calc(100% - 60px);
+		background: #E0E0E0;
+	}
+	.app-content {
+		width: 90%;
+		height: 100%;
 	}
 	#app {
 		height: 100vh;

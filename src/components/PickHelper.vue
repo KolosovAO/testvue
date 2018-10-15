@@ -233,7 +233,7 @@ export default {
 		font-family: Roboto;
 		font-size: 14px;
 		background: #E0E0E0;
-		height: calc(100% - 60px);
+		height: 100%;
 	}
 	input {
 		font-size: 22px;
