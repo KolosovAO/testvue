@@ -1,10 +1,10 @@
 <template>
     <div class="player-info">
-        <div class="selected-account">
+        <div v-if="!showMatchInfo" class="selected-account">
             <input type="text" v-model="playerid"/>
             <button @click="updatePlayerInfo()" class="find-account">search</button>
         </div>
-        <table v-if="matches.length" class="player-games-info">
+        <table v-if="!showMatchInfo && matches.length" class="player-games-info">
             <tr>
                 <th>Hero</th>
                 <th>Date</th>
@@ -42,24 +42,41 @@
                     {{match.tower_damage}}
                 </td>
                 <td>
-                    <button>Show match info</button>
+                    <button @click="showInfo(match.match_id)">Show match info</button>
                 </td>
             </tr>
         </table>
+        <matchInfo 
+            v-if="showMatchInfo"
+            :heroes="heroes"
+            :accountId="playerid"
+            :match="match"
+        >
+        </matchInfo>
+
     </div>
 </template>
 
 <script>
+    import MatchInfo from "./MatchInfo";
     export default {
         name: 'PlayerInfo',
+        components: {
+            matchInfo: MatchInfo
+        },
         props: {
             heroes: Object
         },
         data() {
             return {
                 matches: [],
-                playerid: 116528675
+                playerid: 116528675,
+                showMatchInfo: false,
+                match: null
             }
+        },
+        beforeMount() {
+            this.$root.$on("closeMatchInfo", () => this.showMatchInfo = false);
         },
         methods: {
             async updatePlayerInfo() {
@@ -77,6 +94,15 @@
                 const da = date.getDate();
                 const mo = date.getMonth() + 1;
                 return `${ho < 10 ? "0" + ho : ho}:${mi < 10 ? "0" + mi : mi} ${da < 10 ? "0" + da : da}-${mo < 10 ? "0" + mo : mo}-${date.getFullYear()}`;
+            },
+            async showInfo(id) {
+                try {
+                    const raw = await fetch(`https://api.opendota.com/api/matches/${id}`);
+                    this.match = await raw.json();
+                    this.showMatchInfo = true;
+                } catch(e) {
+                    this.$root.$emit("error", "Invalid match");
+                }
             }
         }
     }
