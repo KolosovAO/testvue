@@ -1,6 +1,10 @@
 <template>
     <div class="player-info">
         <div v-if="!showMatchInfo" class="selected-account">
+            <div class="account">
+                <img :src="avatar" />
+                <div class="account-name">{{name}}</div>
+            </div>
             <input type="text" v-model="playerid"/>
             <button @click="updatePlayerInfo()" class="find-account">search</button>
         </div>
@@ -72,10 +76,16 @@
                 matches: [],
                 playerid: 116528675,
                 showMatchInfo: false,
-                match: null
+                match: null,
+                avatar: null,
+                name: null
             }
         },
         beforeMount() {
+            const playerId = window.localStorage.getItem("player_id");
+            if (playerId) {
+                this.playerid = +playerId;
+            }
             this.$root.$on("closeMatchInfo", () => this.showMatchInfo = false);
         },
         methods: {
@@ -83,6 +93,8 @@
                 try {
                     const raw = await fetch(`https://api.opendota.com/api/players/${this.playerid}/recentMatches`);
                     this.matches = await raw.json();
+                    await this.playerInfo();
+                    window.localStorage.setItem("player_id", this.playerid);
                 } catch(e) {
                     this.$root.$emit("error", "Invalid player");
                 }
@@ -103,6 +115,16 @@
                 } catch(e) {
                     this.$root.$emit("error", "Invalid match");
                 }
+            },
+            async playerInfo() {
+                try {
+                    const raw = await fetch(`https://api.opendota.com/api/players/${this.playerid}`);
+                    const player = await raw.json();
+                    this.avatar = player.profile.avatar;
+                    this.name = player.profile.personaname;
+                } catch(e) {
+                    this.$root.$emit("error", "Invalid player");
+                }
             }
         }
     }
@@ -110,10 +132,23 @@
 
 <style scoped>
     .selected-account {
-		color: white;
+		color: #fff;
 		text-align: center;
 		height: 50px;
 		width: 100%;
+        display: flex;
+    }
+    .account {
+        display: flex;
+        font-family: Roboto;
+        line-height: 50px;
+        font-size: 18px;
+        color: rgba(0, 0, 0, 0.8);
+        width: 250px;
+    }
+    .account img {
+        width: 50px;
+        height: 50px;
     }
     .selected-account input {
         font-family: Roboto;

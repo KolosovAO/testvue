@@ -134,6 +134,7 @@
     .best-hero {
 		height: 28px;
 		display: flex;
+        font-family: Roboto;
 		flex-direction: row;
 		align-items: center;
 	}
