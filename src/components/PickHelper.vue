@@ -67,7 +67,7 @@
 				</div>
 			</div>
 			<div class="calc-block winrate">
-				<div class="team-winrate" :class="{positive: winrate > 50, empty: !winrate}">{{winrate || ""}}</div>
+				<div class="team-winrate" :class="{positive: parseInt(winrate) > 50, empty: !winrate}">{{winrate || ""}}</div>
 				<button @click="findWinrate">get winrate</button>
 			</div>
 		</div>

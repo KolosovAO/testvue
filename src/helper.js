@@ -3,19 +3,24 @@ export function getWinrate(matchups) {
     let badCount = 0;
 
     matchups.forEach(matchup => {
-        const avHeroWr = matchup.reduce((total, item) => {
-            if (!item || item.games_played < 8) {
-                total += 0.5;
-                badCount ++;
-            } else {
-                total += item.wins / item.games_played;
-            }
-            return total;
-        }, 0) / 5;
-        count += avHeroWr;
+        if (!matchup.length) {
+            count += 0.5;
+            badCount += 5;
+        } else {
+            const avHeroWr = matchup.reduce((total, item) => {
+                if (!item || item.games_played < 8) {
+                    total += 0.5;
+                    badCount ++;
+                } else {
+                    total += item.wins / item.games_played;
+                }
+                return total;
+            }, 0) / matchup.length;
+            count += avHeroWr;
+        }
     });
 
-    return `${count * 20} ${badCount > 5 ? "*" : ""}`;
+    return `${(count * 20).toFixed(4)} ${badCount > 5 ? "*" : ""}`;
 }
 
 export function findBestHero(heroes, pick, heroesIds) {

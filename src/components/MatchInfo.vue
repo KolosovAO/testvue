@@ -8,17 +8,17 @@
             <div class="enemy-pick">
 				<img v-for="id in enemy" :src="heroes[id].icon" :key="id"/>
 			</div>
-            <div class="team-winrate" :class="{positive: pickWinrate > 50}">{{pickWinrate}}</div>
+            <div class="team-winrate" :class="{positive: parseInt(pickWinrate) > 50}">{{pickWinrate}}</div>
         </div>
         <div class="block-title">Hero winrate</div>
-        <div class="hero-winrate" :class="{positive: heroWinrate > 50}">{{heroWinrate}}</div>
+        <div class="hero-winrate" :class="{positive: parseInt(heroWinrate) > 50}">{{heroWinrate}}</div>
         <div class="block-title">Best heroes</div>
         <div class="best-heroes"></div>
             <div class="best-hero" v-for="hero in bestHeroes" :key="hero.id">
                 <img :src="heroes[hero.id].icon"/>
                 <div>{{hero.winrate}} {{hero.bad ? "*" : ""}}</div>
             </div>
-        <button @click="close()">Close</button>
+        <button @click="close()">Back</button>
     </div>
 </template>
 
@@ -74,7 +74,7 @@
 
                 this.heroWinrate = heroes.find(hero => hero.id == this.hero).winrate;
 
-                this.bestHeroes = heroes.slice(0, 15);
+                this.bestHeroes = heroes.slice(0, 20);
             },
             async findWinrate() {
                 const matchups = await Promise.all(this.getMatchups(this.ally));
@@ -112,7 +112,7 @@
         margin: 8px;
     }
     .ally-pick .your_hero {
-        background: rgba(255, 0, 0, 0.5);
+        background: rgba(0, 0, 255, 0.5);
     }
     .team-winrate, .hero-winrate {
 		color: rgba(0, 0, 0, 0.7);
@@ -155,7 +155,7 @@
 		text-decoration: none;
 		display: inline-block;
 		font-size: 16px;
-		height: 50px;
+		height: 120px;
 		cursor: pointer;
 		width: 100%;
 	}

@@ -20,7 +20,7 @@
                 <th>Tower damage</th>
                 <th>Calculate</th>
             </tr>
-            <tr v-for="match in matches" :key="match.match_id">
+            <tr v-for="match in matches" :key="match.match_id" class="match" :class="{win: match.player_slot < 5 && match.radiant_win}">
                 <td>
                     <img :src="heroes[match.hero_id].icon"/>
                 </td>
@@ -137,6 +137,7 @@
 		height: 50px;
 		width: 100%;
         display: flex;
+        margin: 0 0 16px 0;
     }
     .account {
         display: flex;
@@ -181,9 +182,6 @@
         font-family: Roboto;
         font-size: 16px;
     }
-    .player-games-info tr {
-        height: 32px;
-    }
     .player-games-info button {
         font-family: Roboto;
 		background: rgba(0, 0, 0, 0.8);
@@ -195,5 +193,12 @@
         border: none;
         text-decoration: none;
         cursor: pointer;
+    }
+    .match {
+        background: rgba(255, 0, 0, 0.2);
+        height: 38px;
+    }
+    .match.win {
+        background: rgba(0, 255, 0, 0.2); 
     }
 </style>
