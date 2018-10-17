@@ -51,6 +51,10 @@
         beforeMount() {
             const players = this.match.players;
             const infoPlayer = players.find(player => player.account_id === this.accountId);
+            if (!infoPlayer) {
+                this.$root.$emit("error", "Too many requests, try again")
+                return;
+            }
             const isRadiant = infoPlayer.isRadiant;
             this.hero = infoPlayer.hero_id;
 

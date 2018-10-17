@@ -20,6 +20,7 @@
 				></playerInfo>
 			</div>
 		</div>
+		<error v-if="error" :message="error"></error>
 	</div>
 </template>
 
@@ -27,18 +28,21 @@
 import PickHelper from './components/PickHelper'
 import PlayerInfo from './components/PlayerInfo'
 import Sidebar from './components/Sidebar'
+import ErrorMessage from './components/Error'
 
 export default {
 	name: 'App',
 	components: {
 		picker: PickHelper,
 		sidebar: Sidebar,
-		playerInfo: PlayerInfo
+		playerInfo: PlayerInfo,
+		error: ErrorMessage
 	},
 	data () {
 		return {
 			heroes: {},
 			active: 0,
+			error: "",
 			agiHeroes: [],
 			strHeroes: [],
 			intHeroes: []
@@ -86,6 +90,15 @@ export default {
 
 			this.$root.$on("updateAcitveItem", index => {
 				this.active = index;
+			});
+
+			this.$root.$on("error", msg => {
+				this.error = msg;
+				setTimeout(() => {
+					if (this.error === msg) {
+						this.error = "";
+					} 
+				}, 5000);
 			});
 		});
 	}
