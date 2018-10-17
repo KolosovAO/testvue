@@ -20,7 +20,7 @@
                 <th>Tower damage</th>
                 <th>Calculate</th>
             </tr>
-            <tr v-for="match in matches" :key="match.match_id" class="match" :class="{win: match.player_slot < 5 && match.radiant_win}">
+            <tr v-for="match in matches" :key="match.match_id" class="match" :class="{win: (match.player_slot < 5 && match.radiant_win) || (match.player_slot >= 5 && !match.radiant_win)}">
                 <td>
                     <img :src="heroes[match.hero_id].icon"/>
                 </td>
