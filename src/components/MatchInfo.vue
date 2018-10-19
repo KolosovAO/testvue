@@ -23,7 +23,7 @@
 </template>
 
 <script>
-    import { getWinrate, findBestHero } from "./../helper";
+    import { findBestHeroes, getPickWinrate } from "./../helper";
 
     export default {
         name: 'MatchInfo',
@@ -71,24 +71,19 @@
         },
         methods: {
             async findBest() {
-                const matchups = await Promise.all(this.getMatchups(this.enemy));
                 const allHeroes = Object.keys(this.heroes);
+                console.log("HERE")
+                const heroes = await findBestHeroes(this.enemy, allHeroes);
+                console.log(heroes)
 
-                const heroes = await findBestHero(matchups, this.enemy, allHeroes);
+                const playerHero = heroes.find(hero => hero.id == this.hero);
 
-                this.heroWinrate = heroes.find(hero => hero.id == this.hero).winrate;
+                this.heroWinrate = playerHero ? playerHero.winrate : 50;
 
                 this.bestHeroes = heroes.slice(0, 20);
             },
             async findWinrate() {
-                const matchups = await Promise.all(this.getMatchups(this.ally));
-
-                const vsTeam2Heroes = matchups.map(arr => arr.filter(hero => this.enemy.includes(hero.hero_id)));
-                
-                this.pickWinrate = await getWinrate(vsTeam2Heroes);
-            },
-            getMatchups(pick) {
-                return pick.map(id => fetch(`https://api.opendota.com/api/heroes/${id}/matchups`).then(res => res.json()));
+                this.pickWinrate = await getPickWinrate(this.ally, this.enemy);
             },
             close() {
                 this.$root.$emit("closeMatchInfo");

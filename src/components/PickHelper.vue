@@ -68,14 +68,14 @@
 			</div>
 			<div class="calc-block winrate">
 				<div class="team-winrate" :class="{positive: parseInt(winrate) > 50, empty: !winrate}">{{winrate || ""}}</div>
-				<button @click="findWinrate">get winrate</button>
+				<button @click="getWinrate">get winrate</button>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
-import { getWinrate, findBestHero } from "./../helper";
+import { getPickWinrate, findBestHeroes } from "./../helper";
 import Finder from "./Finder";
 
 export default {
@@ -167,11 +167,6 @@ export default {
 				});
 			}
 		},
-		findWinrate() {
-			this.getWinrate().then(data => {
-				this.winrate = data;
-			})
-		},
 		toggle(isTeam2) {
 			if (isTeam2) {
 				this.showBest2 = !this.showBest2;
@@ -204,27 +199,17 @@ export default {
 			arr.push(hero.id);
 		},
 		async getWinrate() {
-			const team1 = this.ally;
-			const team2 = this.enemy;
-			if (team1.length !== 5 || team2.length !== 5) {
+			if (this.ally.length !== 5 || this.enemy.length !== 5) {
 				return;
 			}
-			const matchups = this.getMatchups(team1);
-			const heroes = await Promise.all(matchups);
+			const winrate = getPickWinrate(this.ally, this.enemy);
 
-			const vsTeam2Heroes = heroes.map(arr => arr.filter(hero => team2.includes(hero.hero_id)));
-
-			return getWinrate(vsTeam2Heroes);
+			this.winrate = winrate;
 		},
 		async findBestHero(pick) {
-			const matchups = this.getMatchups(pick);
 			const heroes = await Promise.all(matchups);
-			const allHeroes = Object.keys(this.heroes);
 
-			return findBestHero(heroes, pick, allHeroes);
-		},
-		getMatchups(pick) {
-			return pick.map(id => fetch(`https://api.opendota.com/api/heroes/${id}/matchups`).then(res => res.json()));
+			return findBestHeroes(pick, heroes);
 		}
 	},
 	computed: {
