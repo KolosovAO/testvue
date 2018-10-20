@@ -1,0 +1,42 @@
+@import "variables.scss";
+@import "reset.scss";
+
+@import "app.scss";
+
+@import "./comonents/error.scss";
+@import "./comonents/finder.scss";
+@import "./comonents/matchinfo.scss";
+@import "./comonents/pickhelper.scss";
+@import "./comonents/playerinfo.scss";
+@import "./comonents/sidebar.scss";
+
+body {
+    font-family: $main-font;
+}
+
+
+.default-btn {
+    background: $bg1;
+    color: $secondary-color;
+
+    display: inline-block;
+
+    border: none;
+    text-align: center;
+    cursor: pointer;
+
+    font-size: 16px;
+    height: 50px;
+    width: 100%;
+}
+
+.toggle-btn {
+    @extend .default-btn;
+    
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.info-block {
+    height: 48px;
+    border: 1px solid #cecece;
+}

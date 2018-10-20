@@ -1,0 +1,82 @@
+.pick-helper {
+    font-family: Roboto;
+    font-size: 14px;
+    background: #E0E0E0;
+    height: 100%;
+}
+input {
+    font-size: 22px;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid black;
+    margin: 0 0 12px 0;
+}
+.heroes-list-wrapper {
+    position: relative;
+}
+.heroes-list {
+    display: flex;
+    flex-direction: column;
+    background: #757575;
+}
+.heroes-list img {
+    cursor: pointer;
+}
+.heroes {
+    display: flex;
+    width: 1100px;
+    flex-wrap: wrap;
+    margin: 12px 0 12px 0;
+}
+.ally_selected {
+    background: rgba(0, 255, 0, 0.5);
+}
+.enemy_selected {
+    background: rgba(255, 0, 0, 0.5);
+}
+.filtered {
+    opacity: 0.2;
+}
+.calculations .calc-block {
+    margin: 0 36px 0 0;
+    width: 248px;
+    height: 180px;
+}
+img {
+    width: 40px;
+    height: 40px;
+    padding: 4px;
+}
+
+.find-controller {
+    display: flex;
+    flex-direction: row;
+}
+.calculations {
+    margin: 12px 0 0 0;
+    display: flex;
+    flex-direction: row;
+    background: #E0E0E0;
+}
+.best-hero {
+    height: 28px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.best-hero img {
+    width: 24px;
+    height: 24px;
+}
+.best-hero div {
+    line-height: 28px;
+}
+.team-winrate {
+    background: rgba(255, 0, 0, 0.4);
+}
+.team-winrate.positive {
+    background: rgba(0, 255, 0, 0.4);
+}
+.team-winrate.empty {
+    background: transparent;
+}

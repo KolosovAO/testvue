@@ -25,6 +25,8 @@
 </template>
 
 <script>
+import "./styles/index.scss";
+
 import PickHelper from './components/PickHelper'
 import PlayerInfo from './components/PlayerInfo'
 import Sidebar from './components/Sidebar'
@@ -91,7 +93,7 @@ export default {
 			this.$root.$on("updateAcitveItem", index => {
 				this.active = index;
 			});
-
+			
 			this.$root.$on("error", msg => {
 				this.error = msg;
 				setTimeout(() => {
@@ -104,40 +106,3 @@ export default {
 	}
 }
 </script>
-
-<style>
-	html, body {
-		padding: 0;
-		margin: 0;
-	}
-	.app-header {
-		display: flex;
-		height: 60px;
-		line-height: 60px;
-		width: 100%;
-		background: #202124;	
-	}
-	.logo {
-		height: 60px;
-		width: 90px;
-	}
-	.header-text {
-		text-align: center;
-		font-family: Roboto;
-		color: #FFF;
-		font-size: 40px;
-	}
-	.app-body {
-		display: flex;
-		flex-direction: row;
-		height: calc(100% - 60px);
-		background: #E0E0E0;
-	}
-	.app-content {
-		width: 90%;
-		height: 100%;
-	}
-	#app {
-		height: 100vh;
-	}
-</style>

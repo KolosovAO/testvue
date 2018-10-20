@@ -1,0 +1,30 @@
+#app {
+    height: 100vh;
+}
+.app-header {
+    display: flex;
+    height: 60px;
+    line-height: 60px;
+    width: 100%;
+    background: $bg-header;	
+}
+.logo {
+    height: 60px;
+    width: 90px;
+}
+.header-text {
+    text-align: center;
+    font-family: Roboto;
+    color: #FFF;
+    font-size: 40px;
+}
+.app-body {
+    display: flex;
+    flex-direction: row;
+    height: calc(100% - 60px);
+    background: $bg2;
+}
+.app-content {
+    width: 90%;
+    height: 100%;
+}

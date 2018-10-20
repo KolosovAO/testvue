@@ -37,12 +37,12 @@
 		</div>
 		<div class="calculations">
 			<div class="calc-block picks">
-				<div class="pick">
+				<div class="info-block">
 					<img v-for="id in ally" :src="heroes[id].icon" :key="id"/>
 				</div>
 				<div class="find-controller">
-					<button class="toggler" @click="toggle(false)">{{showBest1 ? "best" : "worst"}}</button>
-					<button @click="findBest(false)">find vs team1</button>
+					<button class="toggle-btn" @click="toggle(false)">{{showBest1 ? "best" : "worst"}}</button>
+					<button class="default-btn" @click="findBest(false)">find vs team1</button>
 				</div>
 				<div v-if="bestVsTeam1.length">
 					<div class="best-hero" v-for="hero in team1Heroes" :key="hero.id">
@@ -52,12 +52,12 @@
 				</div>
 			</div>
 			<div class="calc-block picks">
-				<div class="pick">
+				<div class="info-block">
 					<img v-for="id in enemy" :src="heroes[id].icon" :key="id"/>
 				</div>
 				<div class="find-controller">
-					<button class="toggler" @click="toggle(true)">{{showBest2 ? "best" : "worst"}}</button>
-					<button @click="findBest(true)">find vs team2</button>
+					<button class="toggle-btn" @click="toggle(true)">{{showBest2 ? "best" : "worst"}}</button>
+					<button class="default-btn" @click="findBest(true)">find vs team2</button>
 				</div>
 				<div v-if="bestVsTeam2.length">
 					<div class="best-hero" v-for="hero in team2Heroes" :key="hero.id">
@@ -67,8 +67,8 @@
 				</div>
 			</div>
 			<div class="calc-block winrate">
-				<div class="team-winrate" :class="{positive: parseInt(winrate) > 50, empty: !winrate}">{{winrate || ""}}</div>
-				<button @click="getWinrate">get winrate</button>
+				<div class="info-block team-winrate" :class="{positive: parseInt(winrate) > 50, empty: !winrate}">{{winrate || ""}}</div>
+				<button class="default-btn" @click="getWinrate">get winrate</button>
 			</div>
 		</div>
 	</div>
@@ -143,12 +143,14 @@ export default {
 			}
 		},
 		findBest(enemy) {
+			const heroIds = Object.keys(this.heroes);
+
 			if (enemy) {
 				const pick = this.enemy;
 				if (!pick.length) {
 					return;
 				}
-				this.findBestHero(pick).then(data => {
+				findBestHeroes(pick, heroIds).then(data => {
 					const best = data.slice(0, 15);
 					const worst = data.slice(-15);
 					this.bestVsTeam2 = best;
@@ -159,7 +161,7 @@ export default {
 				if (!pick.length) {
 					return;
 				}
-				this.findBestHero(pick).then(data => {
+				findBestHeroes(pick, heroIds).then(data => {
 					const best = data.slice(0, 15);
 					const worst = data.slice(-15);
 					this.bestVsTeam1 = best;
@@ -205,11 +207,6 @@ export default {
 			const winrate = getPickWinrate(this.ally, this.enemy);
 
 			this.winrate = winrate;
-		},
-		async findBestHero(pick) {
-			const heroes = await Promise.all(matchups);
-
-			return findBestHeroes(pick, heroes);
 		}
 	},
 	computed: {
@@ -222,116 +219,3 @@ export default {
 	}
 }
 </script>
-
-<style scoped>
-	.pick-helper {
-		font-family: Roboto;
-		font-size: 14px;
-		background: #E0E0E0;
-		height: 100%;
-	}
-	input {
-		font-size: 22px;
-		outline: none;
-		border: none;
-        border-bottom: 1px solid black;
-		margin: 0 0 12px 0;
-	}
-	.heroes-list-wrapper {
-		position: relative;
-	}
-	.heroes-list {
-		display: flex;
-		flex-direction: column;
-		background: #757575;
-	}
-	.heroes-list img {
-		cursor: pointer;
-	}
-	.heroes {
-		display: flex;
-		width: 1100px;
-		flex-wrap: wrap;
-		margin: 12px 0 12px 0;
-	}
-	.ally_selected {
-		background: rgba(0, 255, 0, 0.5);
-	}
-	.enemy_selected {
-		background: rgba(255, 0, 0, 0.5);
-	}
-	.filtered {
-		opacity: 0.2;
-	}
-	.calculations .calc-block {
-		margin: 0 36px 0 0;
-		width: 248px;
-		height: 180px;
-	}
-	img {
-		width: 40px;
-		height: 40px;
-		padding: 4px;
-	}
-	button {
-		background-color: rgba(0, 0, 0, 0.8);
-		border: none;
-		color: white;
-		text-align: center;
-		text-decoration: none;
-		display: inline-block;
-		font-size: 16px;
-		height: 50px;
-		cursor: pointer;
-		width: 100%;
-	}
-	.find-controller {
-		display: flex;
-		flex-direction: row;
-	}
-	.find-controller button {
-		width: 50%;
-	}
-	.toggler {
-		background: rgba(0, 0, 0, 0.5);
-	}
-	.pick {
-		height: 48px;
-		border: 1px solid #cecece;
-	}
-	.calculations {
-		margin: 12px 0 0 0;
-		display: flex;
-		flex-direction: row;
-		background: #E0E0E0;
-	}
-	.best-hero {
-		height: 28px;
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-	}
-	.best-hero img {
-		width: 24px;
-		height: 24px;
-	}
-	.best-hero div {
-		line-height: 28px;
-	}
-	.team-winrate {
-		color: rgba(0, 0, 0, 0.7);
-		font-family: Roboto;
-		font-size: 20px;
-		height: 48px;
-		line-height: 50px;
-		text-align: center;
-		background: rgba(255, 0, 0, 0.4);
-		border: 1px solid #cecece;
-	}
-	.team-winrate.positive {
-		background: rgba(0, 255, 0, 0.4);
-	}
-	.team-winrate.empty {
-		background: transparent;
-	}
-</style>
