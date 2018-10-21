@@ -1,9 +1,9 @@
 <template>
 	<div class="pick-helper">
-		<div class="heroes-list-wrapper">
-			<finder :filter="heroFilter"></finder>
-			<div class="heroes-list">
-				<div class="heroes str-heroes">
+		<div class="heroes-container">
+			<finder :v-if="heroFilter" :filter="heroFilter"></finder>
+			<div class="heroes-view">
+				<div class="heroes-subview str-heroes">
 					<img
 						:src="hero.icon"
 						:key="hero.id"
@@ -13,7 +13,7 @@
 						v-for="hero in strHeroes"
 					/>
 				</div>
-				<div class="heroes agi-heroes">
+				<div class="heroes-subview agi-heroes">
 					<img
 						:src="hero.icon"
 						:key="hero.id"
@@ -23,7 +23,7 @@
 						v-for="hero in agiHeroes"
 					/>
 				</div>
-				<div class="heroes int-heroes">
+				<div class="heroes-subview int-heroes">
 					<img
 						:src="hero.icon"
 						:key="hero.id"
@@ -41,11 +41,15 @@
 					<img v-for="id in ally" :src="heroes[id].icon" :key="id"/>
 				</div>
 				<div class="find-controller">
-					<button class="toggle-btn" @click="toggle(false)">{{showBest1 ? "best" : "worst"}}</button>
-					<button class="default-btn" @click="findBest(false)">find vs team1</button>
+					<div class="toggler">
+						<div class="mdi mdi-arrow-up-bold" :class="{active: showBest1}" @click="toggle(true, true)"></div>
+						<div class="mdi mdi-arrow-down-bold" :class="{active: !showBest1}" @click="toggle(true, false)"></div>
+					</div>
+					<button class="default-btn" @click="findBest(false)">Find</button>
+					<div class="mdi mdi-delete clear-heroes" @click="clearAlly"></div>
 				</div>
 				<div v-if="bestVsTeam1.length">
-					<div class="best-hero" v-for="hero in team1Heroes" :key="hero.id">
+					<div class="calc-result" v-for="hero in team1Heroes" :key="hero.id">
 						<img :src="heroes[hero.id].icon"/>
 						<div>{{hero.winrate}} {{hero.bad ? "*" : ""}}</div>
 					</div>
@@ -56,11 +60,15 @@
 					<img v-for="id in enemy" :src="heroes[id].icon" :key="id"/>
 				</div>
 				<div class="find-controller">
-					<button class="toggle-btn" @click="toggle(true)">{{showBest2 ? "best" : "worst"}}</button>
-					<button class="default-btn" @click="findBest(true)">find vs team2</button>
+					<div class="toggler">
+						<div class="mdi mdi-arrow-up-bold" :class="{active: showBest2}" @click="toggle(false, true)"></div>
+						<div class="mdi mdi-arrow-down-bold" :class="{active: !showBest2}" @click="toggle(false, false)"></div>
+					</div>
+					<button class="default-btn" @click="findBest(true)">Find</button>
+					<div class="mdi mdi-delete clear-heroes" @click="clearEnemy"></div>
 				</div>
 				<div v-if="bestVsTeam2.length">
-					<div class="best-hero" v-for="hero in team2Heroes" :key="hero.id">
+					<div class="calc-result" v-for="hero in team2Heroes" :key="hero.id">
 						<img :src="heroes[hero.id].icon"/>
 						<div>{{hero.winrate}} {{hero.bad ? "*" : ""}}</div>
 					</div>
@@ -68,7 +76,7 @@
 			</div>
 			<div class="calc-block winrate">
 				<div class="info-block team-winrate" :class="{positive: parseInt(winrate) > 50, empty: !winrate}">{{winrate || ""}}</div>
-				<button class="default-btn" @click="getWinrate">get winrate</button>
+				<button class="default-btn" @click="getWinrate">Calculate</button>
 			</div>
 		</div>
 	</div>
@@ -105,6 +113,7 @@ export default {
 		}
 	},
 	beforeMount() {
+		let timeout = null;
 		this.keydownListener = e => {
 			if (e.shiftKey || e.altKey || e.ctrlKey) {
 				return;
@@ -121,11 +130,26 @@ export default {
 			for (const key in this.heroes) {
 				this.heroes[key].$filtered = this.heroes[key].local.toLowerCase().indexOf(this.heroFilter) !== -1;
 			}
+
+			if (timeout) {
+				clearTimeout(timeout);
+				timeout = null;
+			}
+            timeout = setTimeout(() => {
+				timeout = null;
+				this.heroFilter = "";
+				for (const key in this.heroes) {
+					this.heroes[key].$filtered = true;
+				}
+
+            }, 2500);
 		};
 		document.addEventListener("keydown", this.keydownListener);
 
 	},
 	beforeDestroy() {
+		this.clearEnemy();
+		this.clearAlly();
 		document.removeEventListener("keydown", this.keydownListener);
 	},
 	methods: {
@@ -169,11 +193,11 @@ export default {
 				});
 			}
 		},
-		toggle(isTeam2) {
-			if (isTeam2) {
-				this.showBest2 = !this.showBest2;
+		toggle(isTeam1, value) {
+			if (isTeam1) {
+				this.showBest1 = value;
 			} else {
-				this.showBest1 = !this.showBest1;
+				this.showBest2 = value;
 			}
 		},
 		balanceArray(hero, isEnemy) {
@@ -204,9 +228,21 @@ export default {
 			if (this.ally.length !== 5 || this.enemy.length !== 5) {
 				return;
 			}
-			const winrate = getPickWinrate(this.ally, this.enemy);
+			const winrate = await getPickWinrate(this.ally, this.enemy);
 
 			this.winrate = winrate;
+		},
+		clearEnemy() {
+			this.enemy.forEach(id => {
+				this.heroes[id].$markedEnemy = false;
+			});
+			this.enemy = [];
+		},
+		clearAlly() {
+			this.ally.forEach(id => {
+				this.heroes[id].$markedAlly = false;
+			});
+			this.ally = [];
 		}
 	},
 	computed: {
