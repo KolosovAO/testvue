@@ -49,7 +49,9 @@
                     {{match.tower_damage}}
                 </td>
                 <td>
-                    <button class="default-btn" @click="showInfo(match.match_id)">Calculate</button>
+                    <button class="default-btn" @click="showInfo(match.match_id)">
+                        <span class="mdi mdi-calculator"></span>
+                    </button>
                 </td>
             </tr>
         </table>

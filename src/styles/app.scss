@@ -14,8 +14,7 @@
 }
 .header-text {
     text-align: center;
-    font-family: Roboto;
-    color: #FFF;
+    color: $secondary-color;
     font-size: 40px;
 }
 .app-body {
@@ -25,6 +24,6 @@
     background: $bg2;
 }
 .app-content {
-    width: 90%;
+    width: calc(100% - 200px);
     height: 100%;
 }

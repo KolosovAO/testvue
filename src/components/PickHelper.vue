@@ -76,7 +76,10 @@
 			</div>
 			<div class="calc-block winrate">
 				<div class="info-block team-winrate" :class="{positive: parseInt(winrate) > 50, empty: !winrate}">{{winrate || ""}}</div>
-				<button class="default-btn" @click="getWinrate">Calculate</button>
+				<button class="default-btn" @click="getWinrate">
+					Calculate
+					<span class="mdi mdi-calculator"></span>
+				</button>
 			</div>
 		</div>
 	</div>
@@ -226,6 +229,7 @@ export default {
 		},
 		async getWinrate() {
 			if (this.ally.length !== 5 || this.enemy.length !== 5) {
+				this.$root.$emit("error", "all 10 heroes required");
 				return;
 			}
 			const winrate = await getPickWinrate(this.ally, this.enemy);
