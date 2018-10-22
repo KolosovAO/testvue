@@ -48,8 +48,9 @@
 					<button class="default-btn" @click="findBest(false)">Find</button>
 					<div class="mdi mdi-delete clear-heroes" @click="clearAlly"></div>
 				</div>
-				<div v-if="bestVsTeam1.length">
-					<div class="calc-result" v-for="hero in team1Heroes" :key="hero.id">
+				<div>
+					<loading v-if="wait.vsAlly"></loading>
+					<div v-if="bestVsTeam1.length" class="calc-result" v-for="hero in team1Heroes" :key="hero.id">
 						<img :src="heroes[hero.id].icon"/>
 						<div>{{hero.winrate}} {{hero.bad ? "*" : ""}}</div>
 					</div>
@@ -67,15 +68,19 @@
 					<button class="default-btn" @click="findBest(true)">Find</button>
 					<div class="mdi mdi-delete clear-heroes" @click="clearEnemy"></div>
 				</div>
-				<div v-if="bestVsTeam2.length">
-					<div class="calc-result" v-for="hero in team2Heroes" :key="hero.id">
+				<div>
+					<loading v-if="wait.vsEnemy"></loading>
+					<div v-if="bestVsTeam2.length" class="calc-result" v-for="hero in team2Heroes" :key="hero.id">
 						<img :src="heroes[hero.id].icon"/>
 						<div>{{hero.winrate}} {{hero.bad ? "*" : ""}}</div>
 					</div>
 				</div>
 			</div>
 			<div class="calc-block winrate">
-				<div class="info-block team-winrate" :class="{positive: parseInt(winrate) > 50, empty: !winrate}">{{winrate || ""}}</div>
+				<div class="info-block team-winrate" :class="{positive: parseInt(winrate) > 50, empty: !winrate}">
+					<loading v-if="wait.winrate"></loading>
+					{{winrate || ""}}
+				</div>
 				<button class="default-btn" @click="getWinrate">
 					Calculate
 					<span class="mdi mdi-calculator"></span>
@@ -88,11 +93,13 @@
 <script>
 import { getPickWinrate, findBestHeroes } from "./../helper";
 import Finder from "./Finder";
+import Loading from "./Loading";
 
 export default {
 	name: 'Pickhelper',
 	components: {
-		finder: Finder
+		finder: Finder,
+		loading: Loading
 	},
 	props: {
 		heroes: Object,
@@ -112,7 +119,12 @@ export default {
 			worstVsTeam2: [],
 			winrate: "",
 			heroFilter: "",
-			keydownListener: null
+			keydownListener: null,
+			wait: {
+				vsEnemy: false,
+				vsAlly: false,
+				winrate: false
+			}
 		}
 	},
 	beforeMount() {
@@ -169,7 +181,7 @@ export default {
 				this.balanceArray(hero, false);
 			}
 		},
-		findBest(enemy) {
+		findBest(enemy) { // [FIX] async await, DRY
 			const heroIds = Object.keys(this.heroes);
 
 			if (enemy) {
@@ -177,22 +189,28 @@ export default {
 				if (!pick.length) {
 					return;
 				}
+				this.clearBestVsEnemy();
+				this.wait.vsEnemy = true;
 				findBestHeroes(pick, heroIds).then(data => {
 					const best = data.slice(0, 15);
 					const worst = data.slice(-15);
 					this.bestVsTeam2 = best;
 					this.worstVsTeam2 = worst;
+					this.wait.vsEnemy = false;
 				});
 			} else {
 				const pick = this.ally;
 				if (!pick.length) {
 					return;
 				}
+				this.clearBestVsAlly();
+				this.wait.vsAlly = true;
 				findBestHeroes(pick, heroIds).then(data => {
 					const best = data.slice(0, 15);
 					const worst = data.slice(-15);
 					this.bestVsTeam1 = best;
 					this.worstVsTeam1 = worst;
+					this.wait.vsAlly = false;
 				});
 			}
 		},
@@ -232,7 +250,10 @@ export default {
 				this.$root.$emit("error", "all 10 heroes required");
 				return;
 			}
+			this.wait.winrate = true;
+			this.winrate = "";
 			const winrate = await getPickWinrate(this.ally, this.enemy);
+			this.wait.winrate = false;
 
 			this.winrate = winrate;
 		},
@@ -241,12 +262,22 @@ export default {
 				this.heroes[id].$markedEnemy = false;
 			});
 			this.enemy = [];
+			this.clearBestVsEnemy();
 		},
 		clearAlly() {
 			this.ally.forEach(id => {
 				this.heroes[id].$markedAlly = false;
 			});
 			this.ally = [];
+			this.clearBestVsAlly();
+		},
+		clearBestVsAlly() {
+			this.bestVsTeam1 = [];
+			this.worstVsTeam1 = [];
+		},
+		clearBestVsEnemy() {
+			this.bestVsTeam2 = [];
+			this.worstVsTeam2 = [];
 		}
 	},
 	computed: {

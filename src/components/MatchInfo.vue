@@ -8,12 +8,19 @@
             <div class="info-block">
 				<img v-for="id in enemy" :src="heroes[id].icon" :key="id"/>
 			</div>
-            <div class="winrate" :class="{positive: parseInt(pickWinrate) > 50}">{{pickWinrate}}</div>
+            <div class="winrate" :class="{positive: parseInt(pickWinrate) > 50}">
+                <loading v-if="wait.winrate"></loading>
+                {{pickWinrate}}
+            </div>
         </div>
         <div class="block-title">Hero winrate</div>
-        <div class="winrate" :class="{positive: parseInt(heroWinrate) > 50}">{{heroWinrate}}</div>
+        <div class="winrate" :class="{positive: parseInt(heroWinrate) > 50}">
+            <loading v-if="wait.bestHeroes"></loading>
+            {{heroWinrate}}
+        </div>
         <div class="block-title">Best heroes</div>
         <div class="best-heroes"></div>
+            <loading v-if="wait.bestHeroes"></loading>
             <div class="best-hero" v-for="hero in bestHeroes" :key="hero.id">
                 <img :src="heroes[hero.id].icon"/>
                 <div>{{hero.winrate}} {{hero.bad ? "*" : ""}}</div>
@@ -26,10 +33,14 @@
 </template>
 
 <script>
+import Loading from "./Loading";
 import { findBestHeroes, getPickWinrate } from "./../helper";
 
 export default {
     name: 'MatchInfo',
+    components: {
+        loading: Loading
+    },
     props: {
         heroes: Object,
         accountId: Number,
@@ -48,7 +59,11 @@ export default {
             hero: null,
             pickWinrate: null,
             heroWinrate: null,
-            bestHeroes: []
+            bestHeroes: [],
+            wait: {
+                teamWinrate: false,
+                bestHeroes: false
+            }
         }
     },
     beforeMount() {
@@ -75,7 +90,11 @@ export default {
     methods: {
         async findBest() {
             const allHeroes = Object.keys(this.heroes);
+
+            this.wait.bestHeroes = true;
+
             const heroes = await findBestHeroes(this.enemy, allHeroes);
+            this.wait.bestHeroes = false;
 
             const playerHero = heroes.find(hero => hero.id == this.hero);
 
@@ -84,7 +103,9 @@ export default {
             this.bestHeroes = heroes.slice(0, 20);
         },
         async findWinrate() {
+            this.wait.winrate = true;
             this.pickWinrate = await getPickWinrate(this.ally, this.enemy);
+            this.wait.winrate = false;
         },
         close() {
             this.$root.$emit("closeMatchInfo");
