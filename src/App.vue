@@ -61,8 +61,9 @@ export default {
 				heroes[hero.id] = {
 					id: hero.id,
 					attr: hero.primary_attr,
-					icon: "http://cdn.dota2.com" + hero.icon,
-					img: "http://cdn.dota2.com" + hero.img,
+					icon: "./static/heroes/" + hero.id + ".png",
+					// icon: "http://cdn.dota2.com" + hero.icon,
+					// img: "http://cdn.dota2.com" + hero.img,
 					name: hero.name,
 					local: hero.localized_name,
 					$markedAlly: false,
