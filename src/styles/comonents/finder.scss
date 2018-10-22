@@ -1,11 +1,13 @@
 .find-helper {
+    position: absolute;
+
     left: 20%;
     top: calc(50% - 32px);
-    position: absolute;
+
     background: transparent;
+
     line-height: 64px;
     font-size: 84px;
-    font-family: Roboto;
+
     padding: 0 8px 0 8px;
-    transition: all ease-in-out;
 }

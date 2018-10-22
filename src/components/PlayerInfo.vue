@@ -1,12 +1,15 @@
 <template>
     <div class="player-info">
-        <div v-if="!showMatchInfo" class="selected-account">
-            <div class="account">
+        <div v-if="!showMatchInfo" class="account-block">
+            <input type="text" v-model="playerid"/>
+            <button @click="updatePlayerInfo()" class="find-account">
+                <span class="mdi mdi-magnify"></span>
+                search
+            </button>
+            <div v-if="avatar" class="account">
                 <img :src="avatar" />
                 <div class="account-name">{{name}}</div>
             </div>
-            <input type="text" v-model="playerid"/>
-            <button @click="updatePlayerInfo()" class="find-account">search</button>
         </div>
         <table v-if="!showMatchInfo && matches.length" class="player-games-info">
             <tr>
@@ -46,7 +49,7 @@
                     {{match.tower_damage}}
                 </td>
                 <td>
-                    <button @click="showInfo(match.match_id)">Show match info</button>
+                    <button class="default-btn" @click="showInfo(match.match_id)">Calculate</button>
                 </td>
             </tr>
         </table>

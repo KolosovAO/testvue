@@ -1,53 +1,63 @@
 .match-info {
-    height: 100%;
     display: flex;
     flex-direction: column;
+    height: 100%;
+
+    .block-title {
+        color: $primary-color;
+
+        font-size: 20px;
+    }
+
+    .picks-info {
+        display: flex;
+        height: 48px;
+        line-height: 48px;
+
+        .info-block {
+            margin: 0 16px 0 0;
+        }
+
+        .ally-pick, .enemy-pick {
+            margin: 8px 8px 8px 8px;
+        }
+
+        .your_hero {
+            background: $bg-neutral;
+        }
+    }
+
+    .winrate {
+        width: 180px;
+
+        background: $bg-negative;
+
+        line-height: 50px;
+        font-size: 20px;
+        text-align: center;
+    }
+    .winrate.positive {
+        background: $bg-positive;
+    }
+
+    img {
+        width: 40px;
+        height: 40px;
+        padding: 4px 4px 4px 4px;
+    }
+
+    .best-hero {
+        height: 28px;
+        display: flex;
+        font-family: Roboto;
+        flex-direction: row;
+        align-items: center;
+
+        img {
+            width: 24px;
+            height: 24px;
+            padding: 2px 2px 2px 2px;
+        }
+    }    
 }
-.match-info img {
-    height: 32px;
-    width: 32px;
-}
-.picks-info {
-    display: flex;
-    height: 48px;
-    line-height: 48px;
-}
-.ally-pick, .enemy-pick {
-    margin: 8px;
-}
-.ally-pick .your_hero {
-    background: rgba(0, 0, 255, 0.5);
-}
-// .team-winrate, .hero-winrate {
-//     color: rgba(0, 0, 0, 0.7);
-//     font-family: Roboto;
-//     font-size: 20px;
-//     height: 48px;
-//     width: 260px;
-//     line-height: 50px;
-//     text-align: center;
-//     background: rgba(255, 0, 0, 0.4);
-//     border: 1px solid #cecece;
-// }
-// .team-winrate.positive, .hero-winrate.positive {
-//     background: rgba(0, 255, 0, 0.4);
-// }
-.best-hero {
-    display: flex;
-}
-.best-hero {
-    height: 28px;
-    display: flex;
-    font-family: Roboto;
-    flex-direction: row;
-    align-items: center;
-}
-.best-hero img {
-    width: 24px;
-    height: 24px;
-}
-.block-title {
-    font-family: Roboto;
-    font-size: 18px;
-    color: rgba(0, 0, 0, 0.8);
-}
+

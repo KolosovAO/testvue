@@ -2,23 +2,26 @@
     <div class="match-info">
         <div class="block-title">Team winrate</div>
         <div class="picks-info">
-        	<div class="ally-pick">
+        	<div class="info-block">
 				<img v-for="id in ally" :src="heroes[id].icon" :key="id" :class="{your_hero: id === hero}"/>
 			</div>
-            <div class="enemy-pick">
+            <div class="info-block">
 				<img v-for="id in enemy" :src="heroes[id].icon" :key="id"/>
 			</div>
-            <div class="team-winrate" :class="{positive: parseInt(pickWinrate) > 50}">{{pickWinrate}}</div>
+            <div class="winrate" :class="{positive: parseInt(pickWinrate) > 50}">{{pickWinrate}}</div>
         </div>
         <div class="block-title">Hero winrate</div>
-        <div class="hero-winrate" :class="{positive: parseInt(heroWinrate) > 50}">{{heroWinrate}}</div>
+        <div class="winrate" :class="{positive: parseInt(heroWinrate) > 50}">{{heroWinrate}}</div>
         <div class="block-title">Best heroes</div>
         <div class="best-heroes"></div>
             <div class="best-hero" v-for="hero in bestHeroes" :key="hero.id">
                 <img :src="heroes[hero.id].icon"/>
                 <div>{{hero.winrate}} {{hero.bad ? "*" : ""}}</div>
             </div>
-        <button @click="close()">Back</button>
+        <button class="default-btn" @click="close()">
+            <span class="mdi mdi-step-backward"></span>
+            Back
+        </button>
     </div>
 </template>
 
