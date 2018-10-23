@@ -77,7 +77,7 @@
 				</div>
 			</div>
 			<div class="calc-block winrate">
-				<div class="info-block team-winrate" :class="{positive: parseInt(winrate) > 50, empty: !winrate}">
+				<div class="info-block team-winrate" :class="{positive: parseInt(winrate) >= 50, empty: !winrate}">
 					<loading v-if="wait.winrate"></loading>
 					{{winrate || ""}}
 				</div>

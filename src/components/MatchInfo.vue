@@ -8,13 +8,13 @@
             <div class="info-block">
 				<img v-for="id in enemy" :src="heroes[id].icon" :key="id"/>
 			</div>
-            <div class="winrate" :class="{positive: parseInt(pickWinrate) > 50}">
+            <div class="winrate" :class="{positive: parseInt(pickWinrate) >= 50}">
                 <loading v-if="wait.winrate"></loading>
                 {{pickWinrate}}
             </div>
         </div>
         <div class="block-title">Hero winrate</div>
-        <div class="winrate" :class="{positive: parseInt(heroWinrate) > 50}">
+        <div class="winrate" :class="{positive: parseInt(heroWinrate) >= 50}">
             <loading v-if="wait.bestHeroes"></loading>
             {{heroWinrate}}
         </div>
