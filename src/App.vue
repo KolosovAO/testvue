@@ -65,7 +65,7 @@ export default {
 					// icon: "http://cdn.dota2.com" + hero.icon,
 					// img: "http://cdn.dota2.com" + hero.img,
 					name: hero.name,
-					local: hero.localized_name,
+					local: hero.localized_name || "new",
 					$markedAlly: false,
 					$markedEnemy: false,
 					$filtered: true
