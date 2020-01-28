@@ -82,3 +82,20 @@ export async function findBestHeroes(pick, heroIds) {
     winrates.sort((a, b) => b.winrate - a.winrate);
     return winrates;
 }
+
+export function fuzzySearch(source, target) {
+    var sourceLen = source.length;
+    var targetLen = target.length;
+    if (targetLen > sourceLen) {
+        return false;
+    }
+    var sourceIndex = 0;
+    var targetIndex = 0;
+    while (sourceIndex < sourceLen && targetIndex < targetLen) {
+        if (source[sourceIndex] === target[targetIndex]) {
+            targetIndex++;
+        }
+        sourceIndex++;
+    }
+    return targetIndex === targetLen;
+}

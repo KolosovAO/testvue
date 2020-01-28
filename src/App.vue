@@ -5,19 +5,13 @@
 			<div class="header-text">MEDVEBOT</div>
 		</div>
 		<div class="app-body">
-			<sidebar :active="active"/>
 			<div class="app-content">
 				<picker
-					v-if="active===0"
 					:heroes="heroes"
 					:agiHeroes="agiHeroes"
 					:strHeroes="strHeroes"
 					:intHeroes="intHeroes"
 				></picker>
-				<playerInfo 
-					v-if="active===1"
-					:heroes="heroes"
-				></playerInfo>
 			</div>
 		</div>
 		<error v-if="error" :message="error"></error>
@@ -28,16 +22,12 @@
 import "./styles/index.scss";
 
 import PickHelper from './components/PickHelper'
-import PlayerInfo from './components/PlayerInfo'
-import Sidebar from './components/Sidebar'
 import ErrorMessage from './components/Error'
 
 export default {
 	name: 'App',
 	components: {
 		picker: PickHelper,
-		sidebar: Sidebar,
-		playerInfo: PlayerInfo,
 		error: ErrorMessage
 	},
 	data () {
@@ -62,8 +52,6 @@ export default {
 					id: hero.id,
 					attr: hero.primary_attr,
 					icon: "./static/heroes/" + hero.id + ".png",
-					// icon: "http://cdn.dota2.com" + hero.icon,
-					// img: "http://cdn.dota2.com" + hero.img,
 					name: hero.name,
 					local: hero.localized_name || "new",
 					$markedAlly: false,

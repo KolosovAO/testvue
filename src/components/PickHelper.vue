@@ -91,7 +91,7 @@
 </template>
 
 <script>
-import { getPickWinrate, findBestHeroes } from "./../helper";
+import { getPickWinrate, findBestHeroes, fuzzySearch } from "./../helper";
 import Finder from "./Finder";
 import Loading from "./Loading";
 
@@ -143,7 +143,7 @@ export default {
 				this.heroFilter = "";
 			}
 			for (const key in this.heroes) {
-				this.heroes[key].$filtered = this.heroes[key].local.toLowerCase().indexOf(this.heroFilter) !== -1;
+				this.heroes[key].$filtered = fuzzySearch(this.heroes[key].local.toLowerCase(), this.heroFilter);
 			}
 
 			if (timeout) {

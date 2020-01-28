@@ -1,7 +1,6 @@
 {
-  "name": "vd",
+  "name": "dota-pick-tester",
   "version": "1.0.0",
-  "description": "A Vue.js project",
   "author": "jora364@gmail.com",
   "private": true,
   "scripts": {
