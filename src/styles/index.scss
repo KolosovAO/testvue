@@ -3,10 +3,10 @@
 
 @import "app.scss";
 
-@import "./comonents/error.scss";
-@import "./comonents/finder.scss";
-@import "./comonents/pickhelper.scss";
-@import "./comonents//loading.scss";
+@import "./components/error.scss";
+@import "./components/finder.scss";
+@import "./components/pickhelper.scss";
+@import "./components/loading.scss";
 
 body {
     font-family: $main-font;

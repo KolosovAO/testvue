@@ -138,4 +138,17 @@
     }
 }
 
+.hero-info {
+    width: 1060px;
+    font-size: 24px;
+    background: $primary-color;
+    color: $secondary-color;
 
+    .good_wr {
+        background: $bg-positive;
+    }
+
+    .bad_wr {
+        background: $bg-negative;
+    }
+}
