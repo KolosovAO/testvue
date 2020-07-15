@@ -1,0 +1,53 @@
+.live {
+    background-color: $bg3;
+    width: 1060px;
+
+    font-size: 24px;
+
+    .match {
+        display: flex;
+        height: 96px;
+        align-items: center;
+        border-bottom: 1px solid $primary-color;
+    }
+    .team {
+        display: flex;
+        align-items: center;
+
+        &__score {
+            text-align: center;
+            width: 40px;
+            font-weight: 800;
+        }
+
+        &__logo img {
+            height: 48px;
+        }
+    }
+
+
+    img {
+        height: 36px;
+    }
+
+    .copy {
+        margin-left: auto;
+        
+        .mdi {
+            display: inline-block;
+            color: $bg1;
+    
+            width: 48px;
+            height: 50px;
+            line-height: 50px;
+            font-size: 48px;
+            border: none;
+    
+            &:hover {
+                cursor: pointer;
+
+                opacity: 0.75;
+            }
+        }
+    }
+}

@@ -3,5 +3,9 @@ export const getURL = {
     heroStats: () => "https://api.opendota.com/api/heroStats",
     recentMatches: playerId => `https://api.opendota.com/api/players/${playerId}/recentMatches`,
     player: playerId => `https://api.opendota.com/api/players/${playerId}`,
-    match: id => `https://api.opendota.com/api/matches/${id}`
+    match: id => `https://api.opendota.com/api/matches/${id}`,
+    live: () => "https://api.opendota.com/api/live",
+    teams: () => "https://api.opendota.com/api/teams",
+    recentHeroesMatches: (pick1, pick2) =>
+        `https://api.opendota.com/api/findMatches?${pick1.map(id => "teamA[]=" + id).join("&")}&${pick2.map(id => "teamB[]=" + id).join("&")}`
 }

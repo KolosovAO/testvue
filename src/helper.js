@@ -10,7 +10,7 @@ export async function getMatchups(pick) {
 export async function getPickWinrate(team1, team2, pretty = true) {
     const matchups = await getMatchups(team1);
 
-    const vsTeam2Heroes = matchups.map(matchup => 
+    const vsTeam2Heroes = matchups.map(matchup =>
         matchup.filter(hero => team2.includes(hero.hero_id))
     );
 
@@ -43,7 +43,7 @@ export async function getPickWinrate(team1, team2, pretty = true) {
     return {
         bad: badCount,
         winrate
-    } 
+    }
 }
 
 export async function findBestHeroes(pick, heroIds) {
@@ -98,4 +98,41 @@ export function fuzzySearch(source, target) {
         sourceIndex++;
     }
     return targetIndex === targetLen;
+}
+
+export async function getLiveProMatches() {
+    const res = await fetch(getURL.live());
+    const matches = await res.json();
+
+    const getTeamPlayers = (players, team_name) => players.filter((player) => player.team_name === team_name);
+
+    const getHeroInfo = (players, radiant_team_name, dire_team_name) => {
+        const radiant_players = getTeamPlayers(players, radiant_team_name);
+        if (radiant_players.length === 5) {
+            return {
+                radiant_heroes: radiant_players.map(({ hero_id }) => hero_id),
+                dire_heroes: players.filter((player) => !radiant_players.includes(player)).map(({ hero_id }) => hero_id),
+            };
+        }
+        const dire_players = getTeamPlayers(players, dire_team_name);
+        if (dire_players.length === 5) {
+            return {
+                radiant_heroes: players.filter((player) => !dire_players.includes(player)).map(({ hero_id }) => hero_id),
+                dire_heroes: dire_players.map(({ hero_id }) => hero_id),
+            };
+        }
+    }
+
+    return matches.filter(({ team_id_radiant, team_id_dire, players }) => team_id_radiant && team_id_dire && players.length === 10)
+        .map(({ team_id_radiant, team_id_dire, radiant_score, dire_score, players, match_id, team_name_radiant, team_name_dire }) => ({
+            match_id,
+            team_id_radiant,
+            team_name_dire,
+            team_name_radiant,
+            team_id_dire,
+            radiant_score,
+            dire_score,
+            ...getHeroInfo(players, team_name_radiant, team_name_dire)
+        }))
+        .filter(({ dire_heroes, radiant_heroes }) => dire_heroes && radiant_heroes && dire_heroes.length === 5 && radiant_heroes.length === 5);
 }

@@ -146,7 +146,9 @@ export default {
     heroes: Object,
     agiHeroes: Array,
     strHeroes: Array,
-    intHeroes: Array
+    intHeroes: Array,
+    forcedAlly: Array,
+    forcedEnemy: Array
   },
   data() {
     return {
@@ -204,6 +206,18 @@ export default {
       }, 2500);
     };
     document.addEventListener("keydown", this.keydownListener);
+  },
+  mounted() {
+    if (this.forcedEnemy.length) {
+      this.forcedEnemy.forEach(hero_id =>
+        this.balanceArray(this.heroes[hero_id], true)
+      );
+    }
+    if (this.forcedAlly.length) {
+      this.forcedAlly.forEach(hero_id =>
+        this.balanceArray(this.heroes[hero_id], false)
+      );
+    }
   },
   beforeDestroy() {
     this.clearEnemy();
