@@ -149,7 +149,15 @@ export async function getTeamHeroesWinrate(team_id, heroes_ids) {
         }
     }
 
-    return result.sort((a, b) => b.wins / b.games_played - a.wins / a.games_played);
+    const empty_heroes = [];
+    if (result.length !== heroes_ids.length) {
+        empty_heroes.push(...heroes_ids.filter((hero) => result.every(({ hero_id }) => hero_id !== hero)).map((hero_id) => ({
+            hero_id,
+            is_empty: true
+        })));
+    }
+
+    return result.sort((a, b) => b.wins / b.games_played - a.wins / a.games_played).concat(empty_heroes);
 }
 
 export async function getTeamLastMatches(team_id, count = 15) {
