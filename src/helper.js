@@ -136,3 +136,31 @@ export async function getLiveProMatches() {
         }))
         .filter(({ dire_heroes, radiant_heroes }) => dire_heroes && radiant_heroes && dire_heroes.length === 5 && radiant_heroes.length === 5);
 }
+
+export async function getTeamHeroesWinrate(team_id, heroes_ids) {
+    const res = await fetch(getURL.teamHeroes(team_id));
+    const heroes = await res.json();
+
+    const result = [];
+
+    for (const hero of heroes) {
+        if (heroes_ids.includes(hero.hero_id)) {
+            result.push(hero);
+        }
+    }
+
+    return result.sort((a, b) => b.wins / b.games_played - a.wins / a.games_played);
+}
+
+export async function getTeamLastMatches(team_id, count = 15) {
+    const res = await fetch(getURL.teamMatches(team_id));
+    const matches = await res.json();
+
+    return matches.slice(0, count).map(({ match_id, radiant_win, radiant, duration, opposing_team_name, opposing_team_logo }) => ({
+        win: (radiant && radiant_win) || (!radiant && !radiant_win),
+        match_id,
+        duration,
+        opposing_team_logo,
+        opposing_team_name
+    }));
+}
