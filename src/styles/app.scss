@@ -51,9 +51,8 @@
         padding-left: 6px;
         height: 24px;
         font-size: 16px;
-        -moz-box-shadow:inset 2px 2px 5px #888;
-        box-shadow:inset 2px 2px 5px #888;
-        border: 1px solid #b8b8b8;
+        box-shadow: inset 2px 2px 5px $bg4;
+        border: 1px solid $bg3;
     }
 
     .team-finder__suggested_team {
