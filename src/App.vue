@@ -1,11 +1,11 @@
 <template>
   <div id="app">
     <div class="app-header">
-      <img class="logo" src="./assets/bear.jpg" />
+      <img class="logo" src="./assets/medvebet.png" />
       <div class="header-text">MEDVEBOT</div>
       <div class="live-circle" @click="toggleLive"></div>
       <div class="team-finder" v-if="live">
-        <input type="text" v-model="team_input_value" />
+        <input type="text" @keyup.enter="getTeamInfo" v-model="team_input_value" />
         <div @click="getTeamInfo" class="mdi mdi-magnify"></div>
         <div class="team-finder__suggested_team">{{suggested_team && suggested_team.name}}</div>
         <div @click="clear" v-if="team_info" class="mdi mdi-backspace"></div>
@@ -16,14 +16,14 @@
       <div class="app-content">
         <picker
           v-if="!live"
+          :teams="teams"
           :heroes="heroes"
           :agiHeroes="agiHeroes"
           :strHeroes="strHeroes"
           :intHeroes="intHeroes"
-          :forcedAlly="forcedAlly"
-          :forcedEnemy="forcedEnemy"
+          :forced_match="forced_match"
         />
-        <live v-if="live && !team_info" :heroes="heroes" :teams="teams" :copyHeroes="copyHeroes" />
+        <live v-if="live && !team_info" :heroes="heroes" :teams="teams" :copyMatch="copyMatch" />
         <teaminfo v-if="live && team_info" :heroes="heroes" :team_info="team_info" single />
       </div>
     </div>
@@ -43,6 +43,7 @@ import { getURL } from "./urls";
 import {
   fuzzySearch,
   getTeamHeroesWinrate,
+  getTeamInfo,
   getTeamLastMatches
 } from "./helper";
 
@@ -64,8 +65,7 @@ export default {
       agiHeroes: [],
       strHeroes: [],
       intHeroes: [],
-      forcedAlly: [],
-      forcedEnemy: [],
+      forced_match: undefined,
       team_input_value: "",
       suggested_team: undefined,
       team_info: undefined,
@@ -94,14 +94,23 @@ export default {
   },
   methods: {
     toggleLive() {
-      this.forcedAlly = [];
-      this.forcedEnemy = [];
       this.live = !this.live;
     },
-    copyHeroes(ally, enemy) {
-      this.live = false;
-      this.forcedAlly = ally;
-      this.forcedEnemy = enemy;
+    copyMatch(match) {
+      const teams_to_update = [];
+      if (!this.teams[match.team_id_radiant]) {
+        teams_to_update.push(match.team_id_radiant);
+      }
+      if (!this.teams[match.team_id_dire]) {
+        teams_to_update.push(match.team_id_dire);
+      }
+      Promise.all(teams_to_update.map(getTeamInfo)).then(teams => {
+        teams.forEach(team => {
+          this.teams[team.team_id] = team;
+        });
+        this.live = false;
+        this.forced_match = match;
+      });
     },
     getTeamInfo() {
       if (this.suggested_team) {
