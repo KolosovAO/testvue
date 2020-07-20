@@ -8,6 +8,7 @@ export const getURL = {
     teams: () => "https://api.opendota.com/api/teams",
     teamMatches: (team_id) => `https://api.opendota.com/api/teams/${team_id}/matches`,
     teamHeroes: (team_id) => `https://api.opendota.com/api/teams/${team_id}/heroes`,
+    team: (team_id) => `https://api.opendota.com/api/teams/${team_id}`,
     recentHeroesMatches: (pick1, pick2) =>
         `https://api.opendota.com/api/findMatches?${pick1.map(id => "teamA[]=" + id).join("&")}&${pick2.map(id => "teamB[]=" + id).join("&")}`
 }

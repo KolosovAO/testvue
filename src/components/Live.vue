@@ -1,7 +1,7 @@
-<template>
+  <template>
   <div class="live">
-    <div v-if="is_empty">NO LIVE GAMES NOW</div>
     <div class="matches">
+      <div v-if="is_empty">NO LIVE GAMES NOW</div>
       <div class="match" v-for="match in matches" :key="match.id">
         <div class="team">
           <div class="team__logo" v-if="teams[match.team_id_radiant]">
@@ -33,10 +33,7 @@
         </div>
         <div class="icons">
           <div class="mdi mdi-google-analytics" @click="analytic(match)"></div>
-          <div
-            class="mdi mdi-content-copy"
-            @click="copyHeroes(match.radiant_heroes, match.dire_heroes)"
-          ></div>
+          <div class="mdi mdi-content-copy" @click="copyMatch(match)"></div>
         </div>
       </div>
     </div>
@@ -54,7 +51,8 @@
 import {
   getLiveProMatches,
   getTeamHeroesWinrate,
-  getTeamLastMatches
+  getTeamLastMatches,
+  getTeamInfo
 } from "./../helper";
 import Loading from "./Loading";
 import TeamInfo from "./TeamInfo";
@@ -68,7 +66,7 @@ export default {
   props: {
     heroes: Object,
     teams: Object,
-    copyHeroes: Function
+    copyMatch: Function
   },
   data() {
     return {
@@ -103,19 +101,32 @@ export default {
           heroes_info_team_dire,
           last_matches_team_dire
         ]) => {
-          this.teams_info = [
-            {
-              team: this.teams[match.team_id_radiant],
-              heroes_info: heroes_info_team_radiant,
-              last_matches: last_matches_team_radiant
-            },
-            {
-              team: this.teams[match.team_id_dire],
-              heroes_info: heroes_info_team_dire,
-              last_matches: last_matches_team_dire
-            }
-          ];
-          this.loading_teams_info = false;
+          const teams_to_update = [];
+          if (!this.teams[match.team_id_radiant]) {
+            teams_to_update.push(match.team_id_radiant);
+          }
+          if (!this.teams[match.team_id_dire]) {
+            teams_to_update.push(match.team_id_dire);
+          }
+
+          Promise.all(teams_to_update.map(getTeamInfo)).then(teams => {
+            teams.forEach(team => {
+              this.teams[team.team_id] = team;
+            });
+            this.teams_info = [
+              {
+                team: this.teams[match.team_id_radiant],
+                heroes_info: heroes_info_team_radiant,
+                last_matches: last_matches_team_radiant
+              },
+              {
+                team: this.teams[match.team_id_dire],
+                heroes_info: heroes_info_team_dire,
+                last_matches: last_matches_team_dire
+              }
+            ];
+            this.loading_teams_info = false;
+          });
         }
       );
     }

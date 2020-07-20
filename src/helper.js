@@ -123,7 +123,8 @@ export async function getLiveProMatches() {
         }
     }
 
-    return matches.filter(({ team_id_radiant, team_id_dire, players }) => team_id_radiant && team_id_dire && players.length === 10)
+    return matches
+        .filter(({ team_id_radiant, team_id_dire, players }) => team_id_radiant && team_id_dire && players.length === 10)
         .map(({ team_id_radiant, team_id_dire, radiant_score, dire_score, players, match_id, team_name_radiant, team_name_dire }) => ({
             match_id,
             team_id_radiant,
@@ -171,4 +172,8 @@ export async function getTeamLastMatches(team_id, count = 15) {
         opposing_team_logo,
         opposing_team_name
     }));
+}
+
+export function getTeamInfo(team_id) {
+    return fetch(getURL.team(team_id)).then(res => res.json());
 }

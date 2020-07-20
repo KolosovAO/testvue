@@ -33,10 +33,12 @@
 
     .team__logo {
         width: 80px;
+        text-align: center;
     }
 
     .team__name {
         width: 140px;
+        text-align: center;
         text-overflow: ellipsis;
         overflow: hidden;
     }

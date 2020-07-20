@@ -43,6 +43,15 @@
     </div>
     <div class="calculations">
       <div class="calc-block picks">
+        <div
+          class="team__top"
+          v-if="!ignore_forced_match && forced_match && teams[forced_match.team_id_radiant]"
+        >
+          <div class="team__logo">
+            <img :src="teams[forced_match.team_id_radiant].logo_url" />
+          </div>
+          <div class="team__name">{{teams[forced_match.team_id_radiant].name}}</div>
+        </div>
         <div class="info-block">
           <img v-for="id in ally" :src="heroes[id].icon" :key="id" />
         </div>
@@ -71,6 +80,15 @@
         </div>
       </div>
       <div class="calc-block picks">
+        <div
+          class="team__top"
+          v-if="!ignore_forced_match && forced_match && teams[forced_match.team_id_dire]"
+        >
+          <div class="team__logo">
+            <img :src="teams[forced_match.team_id_dire].logo_url" />
+          </div>
+          <div class="team__name">{{teams[forced_match.team_id_dire].name}}</div>
+        </div>
         <div class="info-block">
           <img v-for="id in enemy" :src="heroes[id].icon" :key="id" />
         </div>
@@ -144,11 +162,11 @@ export default {
   },
   props: {
     heroes: Object,
+    teams: Object,
     agiHeroes: Array,
     strHeroes: Array,
     intHeroes: Array,
-    forcedAlly: Array,
-    forcedEnemy: Array
+    forced_match: Object
   },
   data() {
     return {
@@ -168,10 +186,20 @@ export default {
         vsEnemy: false,
         vsAlly: false,
         winrate: false
-      }
+      },
+      ignore_forced_match: true
     };
   },
   beforeMount() {
+    for (const hero_id in this.heroes) {
+      const hero = this.heroes[hero_id];
+      if (hero.$markedEnemy) {
+        this.balanceArray(hero, true);
+      } else if (hero.$markedAlly) {
+        this.balanceArray(hero, false);
+      }
+    }
+
     let timeout = null;
     this.keydownListener = e => {
       if (e.shiftKey || e.altKey || e.ctrlKey) {
@@ -208,20 +236,19 @@ export default {
     document.addEventListener("keydown", this.keydownListener);
   },
   mounted() {
-    if (this.forcedEnemy.length) {
-      this.forcedEnemy.forEach(hero_id =>
-        this.balanceArray(this.heroes[hero_id], true)
-      );
+    if (!this.forced_match) {
+      return;
     }
-    if (this.forcedAlly.length) {
-      this.forcedAlly.forEach(hero_id =>
-        this.balanceArray(this.heroes[hero_id], false)
-      );
-    }
+    this.ignore_forced_match = false;
+    const { radiant_heroes, dire_heroes } = this.forced_match;
+    radiant_heroes.forEach(hero_id =>
+      this.balanceArray(this.heroes[hero_id], false)
+    );
+    dire_heroes.forEach(hero_id =>
+      this.balanceArray(this.heroes[hero_id], true)
+    );
   },
   beforeDestroy() {
-    this.clearEnemy();
-    this.clearAlly();
     document.removeEventListener("keydown", this.keydownListener);
   },
   methods: {
@@ -232,6 +259,7 @@ export default {
       this.mouseOverHero = undefined;
     },
     heroClick(e, hero) {
+      this.ignore_forced_match = true;
       this.bestVsTeam1 = [];
       this.bestVsTeam2 = [];
       this.worstVsTeam1 = [];
@@ -324,6 +352,7 @@ export default {
       this.winrate = winrate;
     },
     clearEnemy() {
+      this.ignore_forced_match = true;
       this.enemy.forEach(id => {
         this.heroes[id].$markedEnemy = false;
       });
@@ -331,6 +360,7 @@ export default {
       this.clearBestVsEnemy();
     },
     clearAlly() {
+      this.ignore_forced_match = true;
       this.ally.forEach(id => {
         this.heroes[id].$markedAlly = false;
       });
