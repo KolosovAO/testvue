@@ -1,61 +1,51 @@
 const express = require("express");
 const serveStatic = require("serve-static");
 const bodyParser = require("body-parser");
-const fs = require("fs");
+const mongoose = require("mongoose");
+const passport = require("passport");
+const cookieParser = require("cookie-parser");
+const flash = require("connect-flash");
 
-let current_hash = fs.readFileSync("./current_hash");
+const MONGO_URL = "mongodb://serega_bandit:banditizm777@ds149481.mlab.com:49481/heroku_7jlvkgz6";
+mongoose.connect(MONGO_URL);
+
+require("./server/passport_config");
+
+const session = require("express-session");
 
 let app = express();
+
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(session({ secret: "secret777" }));
+
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+
 app.use((req, res, next) => {
-	if (req.originalUrl === "/" || req.originalUrl === "/index.html") {
-		res.send("invalid hash");
-	}
-	if (req.originalUrl.includes("?hash")) {
-		if (req.originalUrl === "/?hash=" + current_hash) {
-			next();
-		} else {
-			res.send("invalid hash");
-		}
-		return;
-	}
-	next();
+    if ((req.path === "/" || req.path === "/index.html") && !req.isAuthenticated()) {
+        res.redirect("/login");
+    }
+    return next();
 });
 
 app.use(serveStatic(__dirname + "/dist"));
 
-app.post("/update", (req, res) => {
-	current_hash = req.body.hash;
-	fs.writeFile("./current_hash", current_hash, () => { });
-
-	res.status(200);
-	res.send(`
-	<!DOCTYPE html>
-	<html>
-	<body>
-		<a href="https://dota-pick-tester.herokuapp.com/?hash=${current_hash}">https://dota-pick-tester.herokuapp.com/?hash=${current_hash}</a>
-	</body>
-	</html>
-	`);
+app.get("/login", (req, res) => {
+    res.sendFile(__dirname + "/server/login_form.html");
 });
 
-app.get("/generate_hash", (req, res) => {
-	res.send(`
-		<!DOCTYPE html>
-		<html>
-		<body>
-			<form method="post" action="update">
-				<input type="text" name="hash" value="${current_hash}"/>
-				<button>update hash</button>
-			</form>
-		</body>
-		</html>
-	`);
-});
+app.post("/login",
+    passport.authenticate("local", {
+        successRedirect: "/",
+        failureRedirect: "/login",
+        failureFlash: true
+    })
+);
 
 const port = process.env.PORT || 5000;
-app.listen(port, () => {
-	console.log("Listening on port " + port)
-});
+app.listen(port, () => console.log("Listening on port " + port));
 
