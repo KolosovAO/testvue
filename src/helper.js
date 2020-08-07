@@ -1,5 +1,7 @@
 import { getURL } from "./urls";
 
+const MAX_BAD_COUNT = 8;
+
 export async function getMatchups(pick) {
     const matchupsPromises = pick.map(id => fetch(getURL.matchups(id)).then(res => res.json()));
 
@@ -24,7 +26,7 @@ export async function getPickWinrate(team1, team2, pretty = true) {
         }
 
         count += matchup.reduce((wr, h) => {
-            if (h.games_played < 8) {
+            if (h.games_played < MAX_BAD_COUNT) {
                 badCount++;
                 wr += 0.5;
             } else {

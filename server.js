@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const passport = require("passport");
 const cookieParser = require("cookie-parser");
 const flash = require("connect-flash");
+const login_form = require("./server/login_form");
 
 mongoose.connect(process.env.MONGODB_URI);
 
@@ -34,7 +35,8 @@ app.use((req, res, next) => {
 app.use(serveStatic(__dirname + "/dist"));
 
 app.get("/login", (req, res) => {
-    res.sendFile(__dirname + "/server/login_form.html");
+    const message = req.flash("message")[0];
+    res.send(login_form(message));
 });
 
 app.post("/login",

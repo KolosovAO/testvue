@@ -17,10 +17,10 @@ passport.use(new LocalStrategy(
         User.findOne({ username: username }, (err, user) => {
             if (err) { return done(err); }
             if (!user) {
-                return done(null, false, { message: "Incorrect username." });
+                return done(null, false, req.flash("message", "Incorrect username."));
             }
             if (!isValidPassword(user, password)) {
-                return done(null, false, { message: "Incorrect password." });
+                return done(null, false, req.flash("message", "Incorrect password."));
             }
             return done(null, user);
         });
@@ -36,7 +36,7 @@ passport.use("signup", new LocalStrategy(
                     return done(err);
                 }
                 if (user) {
-                    return done(null, false, req.flash('message', 'User Already Exists'));
+                    return done(null, false, req.flash("message", "User Already Exists"));
                 } else {
                     const newUser = new User();
 

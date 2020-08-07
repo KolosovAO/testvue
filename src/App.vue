@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="app-header">
-      <img class="logo" src="./assets/medvebet.png" />
+      <img class="logo" src="../static/medvebet.png" />
       <div class="header-text">MEDVEBOT</div>
       <div class="live-circle" @click="toggleLive"></div>
       <div class="team-finder" v-if="live">
@@ -44,7 +44,7 @@ import {
   fuzzySearch,
   getTeamHeroesWinrate,
   getTeamInfo,
-  getTeamLastMatches
+  getTeamLastMatches,
 } from "./helper";
 
 export default {
@@ -54,7 +54,7 @@ export default {
     error: ErrorMessage,
     live: Live,
     teaminfo: TeamInfo,
-    loading: Loading
+    loading: Loading,
   },
   data() {
     return {
@@ -69,7 +69,7 @@ export default {
       team_input_value: "",
       suggested_team: undefined,
       team_info: undefined,
-      team_info_in_progress: false
+      team_info_in_progress: false,
     };
   },
   watch: {
@@ -77,7 +77,7 @@ export default {
       if (!value) {
         this.suggested_team = undefined;
       } else {
-        const suggested_teams = Object.values(this.teams).filter(team =>
+        const suggested_teams = Object.values(this.teams).filter((team) =>
           fuzzySearch(team.name.toLowerCase(), value.toLowerCase())
         );
         let letters_count = Infinity;
@@ -90,7 +90,7 @@ export default {
         }
         this.suggested_team = suggested_team;
       }
-    }
+    },
   },
   methods: {
     toggleLive() {
@@ -104,8 +104,8 @@ export default {
       if (!this.teams[match.team_id_dire]) {
         teams_to_update.push(match.team_id_dire);
       }
-      Promise.all(teams_to_update.map(getTeamInfo)).then(teams => {
-        teams.forEach(team => {
+      Promise.all(teams_to_update.map(getTeamInfo)).then((teams) => {
+        teams.forEach((team) => {
           this.teams[team.team_id] = team;
         });
         this.live = false;
@@ -120,13 +120,13 @@ export default {
             this.suggested_team.team_id,
             Object.values(this.heroes).map(({ id }) => id)
           ),
-          getTeamLastMatches(this.suggested_team.team_id)
+          getTeamLastMatches(this.suggested_team.team_id),
         ]).then(([heroes_info, last_matches]) => {
           this.team_info_in_progress = false;
           this.team_info = {
             team: this.suggested_team,
             heroes_info,
-            last_matches
+            last_matches,
           };
         });
       }
@@ -135,12 +135,12 @@ export default {
       this.team_input_value = "";
       this.team_info = undefined;
       this.suggested_team = undefined;
-    }
+    },
   },
   beforeMount() {
     fetch(getURL.heroStats())
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         const str = [];
         const agi = [];
         const int = [];
@@ -158,7 +158,7 @@ export default {
             divine_wr: hero["8_win"] / hero["8_pick"],
             divine_count: hero["8_pick"],
             pro_count: hero.pro_pick,
-            pro_wr: hero.pro_win / hero.pro_pick
+            pro_wr: hero.pro_win / hero.pro_pick,
           };
           switch (hero.primary_attr) {
             case "agi":
@@ -183,8 +183,8 @@ export default {
       });
 
     fetch(getURL.teams())
-      .then(res => res.json())
-      .then(result => {
+      .then((res) => res.json())
+      .then((result) => {
         const teams = {};
         for (const team of result) {
           teams[team.team_id] = {
@@ -195,14 +195,14 @@ export default {
             last_match_time: team.last_match_time,
             name: team.name,
             tag: team.tag,
-            logo_url: team.logo_url
+            logo_url: team.logo_url,
           };
         }
 
         this.teams = teams;
       });
 
-    this.$root.$on("error", msg => {
+    this.$root.$on("error", (msg) => {
       this.error = msg;
       setTimeout(() => {
         if (this.error === msg) {
@@ -210,6 +210,6 @@ export default {
         }
       }, 5000);
     });
-  }
+  },
 };
 </script>
