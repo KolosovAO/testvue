@@ -11,6 +11,8 @@ const createHash = (password) => {
     return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null);
 }
 
+User.password = createHash(User.password);
+
 passport.use(new LocalStrategy(
     { passReqToCallback: true },
     (req, username, password, done) => {
@@ -38,17 +40,17 @@ passport.use("signup", new LocalStrategy(
                 if (user) {
                     return done(null, false, req.flash("message", "User Already Exists"));
                 } else {
-                    const newUser = new User();
+                    // const newUser = new User();
 
-                    newUser.username = username;
-                    newUser.password = createHash(password);
+                    // newUser.username = username;
+                    // newUser.password = createHash(password);
 
-                    newUser.save(function (err) {
-                        if (err) {
-                            throw err;
-                        }
-                        return done(null, newUser);
-                    });
+                    // newUser.save(function (err) {
+                    //     if (err) {
+                    //         throw err;
+                    //     }
+                    //     return done(null, newUser);
+                    // });
                 }
             });
         });
@@ -57,6 +59,7 @@ passport.use("signup", new LocalStrategy(
 
 
 passport.serializeUser((user, done) => {
+    console.log(user)
     done(null, user._id);
 });
 

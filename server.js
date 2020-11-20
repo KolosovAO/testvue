@@ -1,13 +1,13 @@
 const express = require("express");
 const serveStatic = require("serve-static");
 const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 const passport = require("passport");
 const cookieParser = require("cookie-parser");
 const flash = require("connect-flash");
 const login_form = require("./server/login_form");
 
-mongoose.connect(process.env.MONGODB_URI);
+// mongoose.connect(process.env.MONGODB_URI);
 
 require("./server/passport_config");
 
