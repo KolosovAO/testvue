@@ -15,8 +15,8 @@
 
 module.exports = {
     _id: "TEMP_USER_ID",
-    username: "medvebot",
-    password: "medvebot",
+    username: "temp_user",
+    password: "temp_password",
     findOne({ username }, cb) {
         if (username !== this.username) {
             cb(null, null);
