@@ -6,6 +6,9 @@ const passport = require("passport");
 const cookieParser = require("cookie-parser");
 const flash = require("connect-flash");
 const login_form = require("./server/login_form");
+const https = require("https");
+
+const BOT_TOKEN = "1350189320:AAEGYtya_TJ3Q9EH6IBLdmvt7_1Ogx-F76U";
 
 // mongoose.connect(process.env.MONGODB_URI);
 
@@ -36,6 +39,7 @@ app.use(serveStatic(__dirname + "/dist"));
 
 app.get("/login", (req, res) => {
     const message = req.flash("message")[0];
+    https.get(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=-498385709&text=login from ${req.connection.remoteAddress}`);
     res.send(login_form(message));
 });
 
