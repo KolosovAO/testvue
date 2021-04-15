@@ -11,7 +11,11 @@
             @click="heroClick($event, hero)"
             @mouseover="heroOver(hero)"
             @mouseout="heroOut(hero)"
-            :class="{ally_selected: hero.$markedAlly, enemy_selected: hero.$markedEnemy, filtered: !hero.$filtered}"
+            :class="{
+              ally_selected: hero.$markedAlly,
+              enemy_selected: hero.$markedEnemy,
+              filtered: !hero.$filtered,
+            }"
             v-for="hero in strHeroes"
           />
         </div>
@@ -23,7 +27,11 @@
             @click="heroClick($event, hero)"
             @mouseover="heroOver(hero)"
             @mouseout="heroOut(hero)"
-            :class="{ally_selected: hero.$markedAlly, enemy_selected: hero.$markedEnemy, filtered: !hero.$filtered}"
+            :class="{
+              ally_selected: hero.$markedAlly,
+              enemy_selected: hero.$markedEnemy,
+              filtered: !hero.$filtered,
+            }"
             v-for="hero in agiHeroes"
           />
         </div>
@@ -35,7 +43,11 @@
             @click="heroClick($event, hero)"
             @mouseover="heroOver(hero)"
             @mouseout="heroOut(hero)"
-            :class="{ally_selected: hero.$markedAlly, enemy_selected: hero.$markedEnemy, filtered: !hero.$filtered}"
+            :class="{
+              ally_selected: hero.$markedAlly,
+              enemy_selected: hero.$markedEnemy,
+              filtered: !hero.$filtered,
+            }"
             v-for="hero in intHeroes"
           />
         </div>
@@ -45,12 +57,18 @@
       <div class="calc-block picks">
         <div
           class="team__top"
-          v-if="!ignore_forced_match && forced_match && teams[forced_match.team_id_radiant]"
+          v-if="
+            !ignore_forced_match &&
+            forced_match &&
+            teams[forced_match.team_id_radiant]
+          "
         >
           <div class="team__logo">
             <img :src="teams[forced_match.team_id_radiant].logo_url" />
           </div>
-          <div class="team__name">{{teams[forced_match.team_id_radiant].name}}</div>
+          <div class="team__name">
+            {{ teams[forced_match.team_id_radiant].name }}
+          </div>
         </div>
         <div class="info-block">
           <img v-for="id in ally" :src="heroes[id].icon" :key="id" />
@@ -59,12 +77,12 @@
           <div class="toggler">
             <div
               class="mdi mdi-arrow-up-bold"
-              :class="{active: showBest1}"
+              :class="{ active: showBest1 }"
               @click="toggle(true, true)"
             ></div>
             <div
               class="mdi mdi-arrow-down-bold"
-              :class="{active: !showBest1}"
+              :class="{ active: !showBest1 }"
               @click="toggle(true, false)"
             ></div>
           </div>
@@ -75,19 +93,25 @@
           <loading v-if="wait.vsAlly"></loading>
           <div class="calc-result" v-for="hero in team1Heroes" :key="hero.id">
             <img :src="heroes[hero.id].icon" />
-            <div>{{hero.winrate}} {{hero.bad ? "*" : ""}}</div>
+            <div>{{ hero.winrate }} {{ hero.bad ? "*" : "" }}</div>
           </div>
         </div>
       </div>
       <div class="calc-block picks">
         <div
           class="team__top"
-          v-if="!ignore_forced_match && forced_match && teams[forced_match.team_id_dire]"
+          v-if="
+            !ignore_forced_match &&
+            forced_match &&
+            teams[forced_match.team_id_dire]
+          "
         >
           <div class="team__logo">
             <img :src="teams[forced_match.team_id_dire].logo_url" />
           </div>
-          <div class="team__name">{{teams[forced_match.team_id_dire].name}}</div>
+          <div class="team__name">
+            {{ teams[forced_match.team_id_dire].name }}
+          </div>
         </div>
         <div class="info-block">
           <img v-for="id in enemy" :src="heroes[id].icon" :key="id" />
@@ -96,12 +120,12 @@
           <div class="toggler">
             <div
               class="mdi mdi-arrow-up-bold"
-              :class="{active: showBest2}"
+              :class="{ active: showBest2 }"
               @click="toggle(false, true)"
             ></div>
             <div
               class="mdi mdi-arrow-down-bold"
-              :class="{active: !showBest2}"
+              :class="{ active: !showBest2 }"
               @click="toggle(false, false)"
             ></div>
           </div>
@@ -112,17 +136,17 @@
           <loading v-if="wait.vsEnemy"></loading>
           <div class="calc-result" v-for="hero in team2Heroes" :key="hero.id">
             <img :src="heroes[hero.id].icon" />
-            <div>{{hero.winrate}} {{hero.bad ? "*" : ""}}</div>
+            <div>{{ hero.winrate }} {{ hero.bad ? "*" : "" }}</div>
           </div>
         </div>
       </div>
       <div class="calc-block winrate">
         <div
           class="info-block team-winrate"
-          :class="{positive: parseInt(winrate) >= 50, empty: !winrate}"
+          :class="{ positive: parseInt(winrate) >= 50, empty: !winrate }"
         >
           <loading v-if="wait.winrate"></loading>
-          {{winrate || ""}}
+          {{ winrate || "" }}
         </div>
         <button class="default-btn" @click="getWinrate">
           Calculate
@@ -134,16 +158,29 @@
       <div class="hero-info__row">
         pro games winrate:
         <span
-          :class="{good_wr: mouseOverHero.pro_wr >= 0.5, bad_wr: mouseOverHero.pro_wr < 0.5}"
-        >{{(mouseOverHero.pro_wr * 100).toFixed(2)}}%</span>
-        | games count: {{mouseOverHero.pro_count}}
+          :class="{
+            good_wr: mouseOverHero.pro_wr >= 0.5,
+            bad_wr: mouseOverHero.pro_wr < 0.5,
+          }"
+          >{{
+            (Number.isNaN(mouseOverHero.pro_wr)
+              ? 0
+              : mouseOverHero.pro_wr * 100
+            ).toFixed(2)
+          }}%</span
+        >
+        | games count: {{ mouseOverHero.pro_count }}
       </div>
       <div class="hero-info__row">
         divine+ games winrate:
         <span
-          :class="{good_wr: mouseOverHero.divine_wr >= 0.5, bad_wr: mouseOverHero.divine_wr < 0.5}"
-        >{{(mouseOverHero.divine_wr * 100).toFixed(2)}}%</span>
-        | games count: {{mouseOverHero.divine_count}}
+          :class="{
+            good_wr: mouseOverHero.divine_wr >= 0.5,
+            bad_wr: mouseOverHero.divine_wr < 0.5,
+          }"
+          >{{ (mouseOverHero.divine_wr * 100).toFixed(2) }}%</span
+        >
+        | games count: {{ mouseOverHero.divine_count }}
       </div>
     </div>
   </div>
@@ -158,7 +195,7 @@ export default {
   name: "Pickhelper",
   components: {
     finder: Finder,
-    loading: Loading
+    loading: Loading,
   },
   props: {
     heroes: Object,
@@ -166,7 +203,7 @@ export default {
     agiHeroes: Array,
     strHeroes: Array,
     intHeroes: Array,
-    forced_match: Object
+    forced_match: Object,
   },
   data() {
     return {
@@ -185,9 +222,9 @@ export default {
       wait: {
         vsEnemy: false,
         vsAlly: false,
-        winrate: false
+        winrate: false,
       },
-      ignore_forced_match: true
+      ignore_forced_match: true,
     };
   },
   beforeMount() {
@@ -201,7 +238,7 @@ export default {
     }
 
     let timeout = null;
-    this.keydownListener = e => {
+    this.keydownListener = (e) => {
       if (e.shiftKey || e.altKey || e.ctrlKey) {
         return;
       }
@@ -241,10 +278,10 @@ export default {
     }
     this.ignore_forced_match = false;
     const { radiant_heroes, dire_heroes } = this.forced_match;
-    radiant_heroes.forEach(hero_id =>
+    radiant_heroes.forEach((hero_id) =>
       this.balanceArray(this.heroes[hero_id], false)
     );
-    dire_heroes.forEach(hero_id =>
+    dire_heroes.forEach((hero_id) =>
       this.balanceArray(this.heroes[hero_id], true)
     );
   },
@@ -283,7 +320,7 @@ export default {
         }
         this.clearBestVsEnemy();
         this.wait.vsEnemy = true;
-        findBestHeroes(pick, heroIds).then(data => {
+        findBestHeroes(pick, heroIds).then((data) => {
           const best = data.slice(0, 15);
           const worst = data.slice(-15);
           this.bestVsTeam2 = best;
@@ -297,7 +334,7 @@ export default {
         }
         this.clearBestVsAlly();
         this.wait.vsAlly = true;
-        findBestHeroes(pick, heroIds).then(data => {
+        findBestHeroes(pick, heroIds).then((data) => {
           const best = data.slice(0, 15);
           const worst = data.slice(-15);
           this.bestVsTeam1 = best;
@@ -353,7 +390,7 @@ export default {
     },
     clearEnemy() {
       this.ignore_forced_match = true;
-      this.enemy.forEach(id => {
+      this.enemy.forEach((id) => {
         this.heroes[id].$markedEnemy = false;
       });
       this.enemy = [];
@@ -361,7 +398,7 @@ export default {
     },
     clearAlly() {
       this.ignore_forced_match = true;
-      this.ally.forEach(id => {
+      this.ally.forEach((id) => {
         this.heroes[id].$markedAlly = false;
       });
       this.ally = [];
@@ -374,7 +411,7 @@ export default {
     clearBestVsEnemy() {
       this.bestVsTeam2 = [];
       this.worstVsTeam2 = [];
-    }
+    },
   },
   computed: {
     team1Heroes() {
@@ -382,7 +419,7 @@ export default {
     },
     team2Heroes() {
       return this.showBest2 ? this.bestVsTeam2 : this.worstVsTeam2;
-    }
-  }
+    },
+  },
 };
 </script>
