@@ -11,7 +11,7 @@ const createHash = (password) => {
     return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null);
 }
 
-User.password = createHash(User.password);
+User.users.forEach(user => user.password = createHash(user.password));
 
 passport.use(new LocalStrategy(
     { passReqToCallback: true },

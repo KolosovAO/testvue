@@ -12,19 +12,32 @@
 //     }
 // });
 
+const USERS = [
+    {
+        _id: "TEMP_USER_ID",
+        username: "temp_user",
+        password: "temp_password",
+    },
+    {
+        _id: "TEMP_USER_ID2",
+        username: "temp_user1",
+        password: "temp_user1",
+    }
+]
+
 
 module.exports = {
-    _id: "TEMP_USER_ID",
-    username: "temp_user",
-    password: "temp_password",
+    users: USERS,
     findOne({ username }, cb) {
-        if (username !== this.username) {
+        const user = USERS.find((u) => u.username === username);
+        if (!user) {
             cb(null, null);
         }
-        cb(null, this);
+        cb(null, user);
     },
     findById(id, cb) {
-        if (id !== this._id) {
+        const user = USERS.find((u) => u._id === id);
+        if (!user) {
             cb(null, null);
         }
         cb(null, this);
